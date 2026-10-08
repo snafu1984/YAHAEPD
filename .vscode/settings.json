@@ -1,0 +1,22 @@
+{
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+
+    "[yaml]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+
+    "yaml.customTags": [
+    "!secret scalar"
+    ],
+    "yaml.validate": true,
+
+    "editor.renderWhitespace": "boundary",
+
+    "git.autofetch": true
+}

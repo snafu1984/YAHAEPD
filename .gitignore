@@ -1,0 +1,17 @@
+# ESPHome
+.esphome/
+*.bin
+*.elf
+*.map
+
+# Secrets
+config/secrets.yaml
+
+# macOS
+.DS_Store
+
+# VSCodium
+.vscode/*.log
+
+#von mir
+wiki_full_example.yaml

@@ -1,0 +1,71 @@
+{
+    "version": "2.0.0",
+
+    "tasks": [
+        {
+            "label": "ESPHome: Validate",
+            "type": "shell",
+            "command": "${env:HOME}/ESPHome/.venv/bin/esphome",
+            "args": [
+                "config",
+                "config/main.yaml"
+            ],
+            "problemMatcher": []
+        },
+
+        {
+            "label": "ESPHome: Compile",
+            "type": "shell",
+            "command": "${env:HOME}/ESPHome/.venv/bin/esphome",
+            "args": [
+                "compile",
+                "config/main.yaml"
+            ],
+            "problemMatcher": []
+        },
+
+        {
+            "label": "ESPHome: Upload",
+            "type": "shell",
+            "command": "${env:HOME}/ESPHome/.venv/bin/esphome",
+            "args": [
+                "upload",
+                "config/main.yaml",
+                "--device",
+                "/dev/cu.usbserial-110"
+            ],
+            "problemMatcher": []
+        },
+
+        {
+            "label": "ESPHome: Logs",
+            "type": "shell",
+            "command": "${env:HOME}/ESPHome/.venv/bin/esphome",
+            "args": [
+                "logs",
+                "config/main.yaml",
+                "--device",
+                "/dev/cu.usbserial-110"
+            ],
+            "problemMatcher": []
+        },
+
+        {
+            "label": "ESPHome: Upload + Logs",
+            "type": "shell",
+            "command": "~/ESPHome/.venv/bin/esphome upload config/main.yaml --device /dev/cu.usbserial-110 && ~/ESPHome/.venv/bin/esphome logs config/main.yaml --device /dev/cu.usbserial-110",
+            "problemMatcher": []
+        },
+
+        {
+            "label": "ESPHome: Clean",
+            "type": "shell",
+            "command": "${env:HOME}/ESPHome/.venv/bin/esphome",
+            "args": [
+                "clean",
+                "config/main.yaml"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
