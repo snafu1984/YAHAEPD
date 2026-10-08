@@ -35,6 +35,9 @@ logger:
 # --------------------------------------------------
 
 api:
+  on_client_connected:
+    then:
+      - logger.log: "=== HOME ASSISTANT API CONNECTED ==="
 
 # --------------------------------------------------
 # OTA
@@ -77,11 +80,21 @@ i2c:
   scan: true
 
 # ============================================================
-# RTC - PCF8563
+# TIME / RTC
 # ============================================================
-# PCF8563 Real-Time Clock
-# I2C address: 0x51
+
 time:
+  - platform: homeassistant
+    id: homeassistant_time
+    timezone: Europe/Berlin
+
+    on_time_sync:
+      then:
+        - logger.log: "=== HOME ASSISTANT TIME SYNCHRONIZED ==="
+        - pcf8563.write_time:
+            id: pcf8563_time
+
+  # Hardware RTC: PCF8563
   - platform: pcf8563
     id: pcf8563_time
     address: 0x51
