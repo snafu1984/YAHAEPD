@@ -58,6 +58,13 @@
         },
 
         {
+            "label": "ESPHome: Validate + Clean + Compile",
+            "type": "shell",
+            "command": "~/ESPHome/.venv/bin/esphome config config/main.yaml && ~/ESPHome/.venv/bin/esphome clean config/main.yaml && ~/ESPHome/.venv/bin/esphome compile config/main.yaml",
+            "problemMatcher": []
+        },
+
+        {
             "label": "ESPHome: Upload + Logs",
             "type": "shell",
             "command": "~/ESPHome/.venv/bin/esphome upload config/main.yaml --device /dev/cu.usbserial-110 && ~/ESPHome/.venv/bin/esphome logs config/main.yaml --device /dev/cu.usbserial-110",

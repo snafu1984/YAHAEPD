@@ -122,7 +122,7 @@ sensor:
   # ==========================================================
   # BATTERY LEVEL
   # ==========================================================
-  # Estimated battery percentage based on Li-Ion voltage.
+  # Battery percentage based on the Seeed Studio voltage curve.
   - platform: template
     name: "Battery Level"
     id: battery_level
@@ -130,11 +130,11 @@ sensor:
     icon: "mdi:battery"
     device_class: battery
     state_class: measurement
+    accuracy_decimals: 1
+    update_interval: 60s
 
     lambda: |-
       return id(battery_voltage).state;
-
-    update_interval: 60s
 
     filters:
       - calibrate_linear:
@@ -200,9 +200,53 @@ display:
     lambda: |-
       ESP_LOGD("display", "=== ePaper display refresh ===");
 
+      // ========================================================
+      // DETERMINE DISPLAY MODE
+      // ========================================================
+      // Normal:
+      //   > 10 %  -> black text on white background
+      //
+      // Low battery:
+      //   <= 10 % -> white text on black background
+      const bool inverted =
+        !isnan(id(battery_level).state) &&
+        id(battery_level).state <= 10.0;
+
+      ESP_LOGD(
+        "display",
+        "Battery: %.0f %% -> display inverted: %s",
+        id(battery_level).state,
+        inverted ? "YES" : "NO"
+      );
+
+
+      // ========================================================
+      // BACKGROUND
+      // ========================================================
+      // ESPHome waveshare_epaper uses inverted color semantics.
+      if (inverted) {
+        // Low battery: black background
+        it.fill(Color::WHITE);
+      } else {
+        // Normal: white background
+        it.fill(Color::BLACK);
+      }
+
+
+      // ========================================================
+      // TEXT COLOR
+      // ========================================================
+      const Color text_color =
+        inverted ? Color::BLACK : Color::WHITE;
+
+
+      // ========================================================
+      // DISPLAY CONTENT
+      // ========================================================
       it.printf(
         400, 15,
         id(font_medium),
+        text_color,
         TextAlign::TOP_CENTER,
         "reTerminal E1001"
       );
@@ -210,6 +254,7 @@ display:
       it.printf(
         400, 65,
         id(font_medium),
+        text_color,
         TextAlign::TOP_CENTER,
-        "ESPHome Test Batterie Prozent"
+        "ESPHome Test"
       );
