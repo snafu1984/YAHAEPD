@@ -110,6 +110,15 @@ switch:
     id: battery_enable
     internal: true
 
+# ============================================================
+# ONBOARD LED
+# ============================================================
+# Onboard LED des reTerminal E1001
+# GPIO6
+status_led:
+  pin:
+    number: GPIO6
+    inverted: false
 
 # ============================================================
 # BATTERY VOLTAGE
@@ -269,5 +278,5 @@ display:
         id(font_medium),
         text_color,
         TextAlign::TOP_CENTER,
-        "ESPHome Test"
+        "ESPHome Test LED"
       );
