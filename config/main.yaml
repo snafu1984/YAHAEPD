@@ -118,6 +118,53 @@ sensor:
         - lambda: |-
             ESP_LOGD("battery", "Battery voltage: %.3f V", x);
 
+
+  # ==========================================================
+  # BATTERY LEVEL
+  # ==========================================================
+  # Estimated battery percentage based on Li-Ion voltage.
+  - platform: template
+    name: "Battery Level"
+    id: battery_level
+    unit_of_measurement: "%"
+    icon: "mdi:battery"
+    device_class: battery
+    state_class: measurement
+
+    lambda: |-
+      return id(battery_voltage).state;
+
+    update_interval: 60s
+
+    filters:
+      - calibrate_linear:
+          - 4.15 -> 100.0
+          - 3.96 -> 90.0
+          - 3.91 -> 80.0
+          - 3.85 -> 70.0
+          - 3.80 -> 60.0
+          - 3.75 -> 50.0
+          - 3.68 -> 40.0
+          - 3.58 -> 30.0
+          - 3.49 -> 20.0
+          - 3.41 -> 10.0
+          - 3.30 -> 5.0
+          - 3.27 -> 0.0
+
+      - clamp:
+          min_value: 0
+          max_value: 100
+
+    on_value:
+      then:
+        - lambda: |-
+            ESP_LOGD(
+              "battery",
+              "Battery level: %.0f %% (%.3f V)",
+              x,
+              id(battery_voltage).state
+            );
+
 # --------------------------------------------------
 # Test font
 # --------------------------------------------------
@@ -164,5 +211,5 @@ display:
         400, 65,
         id(font_medium),
         TextAlign::TOP_CENTER,
-        "ESPHome Test Batterie"
+        "ESPHome Test Batterie Prozent"
       );
