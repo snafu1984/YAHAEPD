@@ -1,0 +1,111 @@
+# ============================================================
+# FONTS
+# ============================================================
+
+font:
+  - file: "../fonts/Gotham-Rounded-Bold.ttf"
+    id: font_medium
+    size: 50
+    glyphs:
+      - "abcdefghijklmnopqrstuvwxyz"
+      - "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      - "äöüÄÖÜß"
+      - "0123456789"
+      - " "
+      - "-"
+      - ",.;:%°/"
+
+
+# ============================================================
+# EPAPER DISPLAY
+# ============================================================
+
+# Display:
+#   Seeed Studio reTerminal E1001
+#   Waveshare 7.5"
+#   Resolution: 800 x 480
+
+display:
+  - platform: waveshare_epaper
+    id: epaper_display
+    model: 7.50inv2
+
+    cs_pin: GPIO10
+    dc_pin: GPIO11
+
+    reset_pin:
+      number: GPIO12
+      inverted: false
+
+    busy_pin:
+      number: GPIO13
+      inverted: true
+
+    # Display is updated manually by the Deep Sleep schedule.
+    update_interval: never
+
+    lambda: |-
+      // --------------------------------------------------------
+      // Display refresh
+      // --------------------------------------------------------
+      ESP_LOGD(
+        "display",
+        "=== ePaper display refresh ==="
+      );
+
+      // --------------------------------------------------------
+      // Determine display mode
+      // --------------------------------------------------------
+      // Normal battery level:
+      //   > 10 % -> black text on white background
+      //
+      // Low battery:
+      //   <= 10 % -> white text on black background
+      const bool inverted =
+        !isnan(id(battery_level).state) &&
+        id(battery_level).state <= 10.0;
+
+      ESP_LOGD(
+        "display",
+        "Battery: %.0f %% -> display inverted: %s",
+        id(battery_level).state,
+        inverted ? "YES" : "NO"
+      );
+
+      // --------------------------------------------------------
+      // Background
+      // --------------------------------------------------------
+      // ESPHome's ePaper color handling is inverted for this
+      // display configuration.
+      if (inverted) {
+        // Low battery: black background.
+        it.fill(Color::WHITE);
+      } else {
+        // Normal operation: white background.
+        it.fill(Color::BLACK);
+      }
+
+      // --------------------------------------------------------
+      // Text color
+      // --------------------------------------------------------
+      const Color text_color =
+        inverted ? Color::BLACK : Color::WHITE;
+
+      // --------------------------------------------------------
+      // Display content
+      // --------------------------------------------------------
+      it.printf(
+        400, 15,
+        id(font_medium),
+        text_color,
+        TextAlign::TOP_CENTER,
+        "reTerminal E1001"
+      );
+
+      it.printf(
+        400, 65,
+        id(font_medium),
+        text_color,
+        TextAlign::TOP_CENTER,
+        "ESPHome Test Gotham"
+      );
