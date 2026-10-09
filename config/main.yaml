@@ -36,6 +36,7 @@ esp32:
 # ============================================================
 packages:
   display: !include packages/display.yaml
+  sensors: !include packages/sensors.yaml
 
 
 # ============================================================
