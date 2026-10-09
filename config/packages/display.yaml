@@ -3,6 +3,7 @@
 # ============================================================
 
 font:
+  # Main font
   - file: "../fonts/Gotham-Rounded-Bold.ttf"
     id: font_medium
     size: 50
@@ -15,6 +16,19 @@ font:
       - "-"
       - ",.;:%°/"
 
+  # Calendar font
+  - file: "../fonts/Gotham-Rounded-Bold.ttf"
+    id: font_calendar
+    size: 18
+    glyphs:
+      - "abcdefghijklmnopqrstuvwxyz"
+      - "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      - "äöüÄÖÜß"
+      - "0123456789"
+      - " "
+      - "-"
+      - ".,:()/"
+
 
 # ============================================================
 # EPAPER DISPLAY
@@ -24,6 +38,10 @@ font:
 #   Seeed Studio reTerminal E1001
 #   Waveshare 7.5"
 #   Resolution: 800 x 480
+#
+# Layout:
+#   Y = 0..300     Weather (to be implemented)
+#   Y = 300..480   Birthday calendar
 
 display:
   - platform: waveshare_epaper
@@ -92,7 +110,8 @@ display:
         inverted ? Color::BLACK : Color::WHITE;
 
       // --------------------------------------------------------
-      // Display content
+      // TEMPORARY CONTENT
+      // The weather layout will replace this section later.
       // --------------------------------------------------------
       it.printf(
         400, 15,
@@ -107,5 +126,151 @@ display:
         id(font_medium),
         text_color,
         TextAlign::TOP_CENTER,
-        "ESPHome Test Gotham"
+        "ESPHome Test Kalender"
       );
+
+      // --------------------------------------------------------
+      // BIRTHDAY CALENDAR
+      // Area: X = 400..800, Y = 266..480
+      // Four rows, no heading.
+      // --------------------------------------------------------
+
+      const int calendar_y = 320;
+      const int calendar_height = 160;
+      const int row_height = 40;
+
+      // Column boundaries:
+      // Weekday | Date | Description | Age
+      const int x0 = 266;
+      const int x1 = 298;
+      const int x2 = 356;
+      const int x3 = 768;
+      const int x4 = 800;
+
+      // Outer border
+      it.rectangle(
+        x0,
+        calendar_y,
+        x4 - x0,
+        calendar_height,
+        text_color
+      );
+
+      // Horizontal row separators
+      for (int row = 1; row < 4; row++) {
+        const int y =
+          calendar_y + row * row_height;
+
+        it.line(
+          x0,
+          y,
+          x4 - 1,
+          y,
+          text_color
+        );
+      }
+
+      // Vertical column separators
+      it.line(
+        x1, calendar_y,
+        x1, calendar_y + calendar_height,
+        text_color
+      );
+
+      it.line(
+        x2, calendar_y,
+        x2, calendar_y + calendar_height,
+        text_color
+      );
+
+      it.line(
+        x3, calendar_y,
+        x3, calendar_y + calendar_height,
+        text_color
+      );
+
+      // --------------------------------------------------------
+      // Read calendar values from Home Assistant
+      // Sensors are defined in packages/sensors.yaml
+      // --------------------------------------------------------
+
+      const char *days[] = {
+        id(calendar_a1).state.c_str(),
+        id(calendar_a2).state.c_str(),
+        id(calendar_a3).state.c_str(),
+        id(calendar_a4).state.c_str()
+      };
+
+      const char *dates[] = {
+        id(calendar_b1).state.c_str(),
+        id(calendar_b2).state.c_str(),
+        id(calendar_b3).state.c_str(),
+        id(calendar_b4).state.c_str()
+      };
+
+      const char *descriptions[] = {
+        id(calendar_c1).state.c_str(),
+        id(calendar_c2).state.c_str(),
+        id(calendar_c3).state.c_str(),
+        id(calendar_c4).state.c_str()
+      };
+
+      const char *ages[] = {
+        id(calendar_d1).state.c_str(),
+        id(calendar_d2).state.c_str(),
+        id(calendar_d3).state.c_str(),
+        id(calendar_d4).state.c_str()
+      };
+
+      // --------------------------------------------------------
+      // Draw the four calendar rows
+      // --------------------------------------------------------
+
+      for (int row = 0; row < 4; row++) {
+        const int center_y =
+          calendar_y + row * row_height + row_height / 2;
+
+        // Weekday
+        it.printf(
+          (x0 + x1) / 2,
+          center_y,
+          id(font_calendar),
+          text_color,
+          TextAlign::CENTER,
+          "%s",
+          days[row]
+        );
+
+        // Date
+        it.printf(
+          (x1 + x2) / 2,
+          center_y,
+          id(font_calendar),
+          text_color,
+          TextAlign::CENTER,
+          "%s",
+          dates[row]
+        );
+
+        // Description
+        it.printf(
+          x2 + 8,
+          center_y,
+          id(font_calendar),
+          text_color,
+          TextAlign::CENTER_LEFT,
+          "%s",
+          descriptions[row]
+        );
+
+        // Age
+        it.printf(
+          (x3 + x4) / 2,
+          center_y,
+          id(font_calendar),
+          text_color,
+          TextAlign::CENTER,
+          "%s",
+          ages[row]
+        );
+      }

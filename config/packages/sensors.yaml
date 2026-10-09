@@ -1,0 +1,68 @@
+# ============================================================
+# BIRTHDAY CALENDAR SENSORS
+# ============================================================
+
+text_sensor:
+  - platform: homeassistant
+    id: calendar_a1
+    entity_id: sensor.display_a1
+
+  - platform: homeassistant
+    id: calendar_b1
+    entity_id: sensor.display_b1
+
+  - platform: homeassistant
+    id: calendar_c1
+    entity_id: sensor.display_c1
+
+  - platform: homeassistant
+    id: calendar_d1
+    entity_id: sensor.display_d1
+
+  - platform: homeassistant
+    id: calendar_a2
+    entity_id: sensor.display_a2
+
+  - platform: homeassistant
+    id: calendar_b2
+    entity_id: sensor.display_b2
+
+  - platform: homeassistant
+    id: calendar_c2
+    entity_id: sensor.display_c2
+
+  - platform: homeassistant
+    id: calendar_d2
+    entity_id: sensor.display_d2
+
+  - platform: homeassistant
+    id: calendar_a3
+    entity_id: sensor.display_a3
+
+  - platform: homeassistant
+    id: calendar_b3
+    entity_id: sensor.display_b3
+
+  - platform: homeassistant
+    id: calendar_c3
+    entity_id: sensor.display_c3
+
+  - platform: homeassistant
+    id: calendar_d3
+    entity_id: sensor.display_d3
+
+  - platform: homeassistant
+    id: calendar_a4
+    entity_id: sensor.display_a4
+
+  - platform: homeassistant
+    id: calendar_b4
+    entity_id: sensor.display_b4
+
+  - platform: homeassistant
+    id: calendar_c4
+    entity_id: sensor.display_c4
+
+  - platform: homeassistant
+    id: calendar_d4
+    entity_id: sensor.display_d4
