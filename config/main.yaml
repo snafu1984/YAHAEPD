@@ -1,15 +1,20 @@
+# ============================================================
+# DEVICE CONFIGURATION
+# ============================================================
 substitutions:
   device_name: reterminal-e1001
   friendly_name: "reTerminal E1001"
 
+# ============================================================
+# ESPHOME
+# ============================================================
 esphome:
   name: ${device_name}
   friendly_name: ${friendly_name}
 
-  # ==========================================================
-  # STARTUP
-  # ==========================================================
-  # Enable the battery measurement circuit at startup.
+  # ----------------------------------------------------------
+  # Startup
+  # ----------------------------------------------------------
   on_boot:
     priority: 600
     then:
@@ -17,57 +22,63 @@ esphome:
       - delay: 200ms
       - component.update: battery_voltage
 
+# ============================================================
+# ESP32
+# ============================================================
 esp32:
   board: esp32-s3-devkitc-1
   framework:
     type: arduino
 
-# --------------------------------------------------
-# Serial debug
-# Seeed: CH340K -> UART0
-# --------------------------------------------------
-
+# ============================================================
+# LOGGER
+# ============================================================
 logger:
   hardware_uart: UART0
 
 # ============================================================
 # ESPHOME API
 # ============================================================
-# Verschlüsselte Kommunikation zwischen Home Assistant
-# und dem reTerminal E1001.
 api:
   encryption:
     key: !secret api_encryption_key_3
 
+  # ----------------------------------------------------------
+  # Home Assistant connection
+  # ----------------------------------------------------------
   on_client_connected:
     then:
       - logger.log: "=== HOME ASSISTANT API CONNECTED ==="
 
-# --------------------------------------------------
+# ============================================================
 # OTA
-# --------------------------------------------------
-
+# ============================================================
 ota:
   - platform: esphome
 
-# --------------------------------------------------
-# WiFi
-# --------------------------------------------------
-
+# ============================================================
+# WIFI
+# ============================================================
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
 
+  # ----------------------------------------------------------
+  # Fallback access point
+  # ----------------------------------------------------------
   ap:
     ssid: "reTerminal-E1001"
     password: "ChangeMe123"
 
 captive_portal:
 
-# --------------------------------------------------
-# SPI
-# Seeed hardware reference
-# --------------------------------------------------
+# ============================================================
+# SPI BUS
+# ============================================================
+# Seeed Studio hardware reference:
+#   CLK  -> GPIO7
+#   MOSI -> GPIO9
+#   MISO -> GPIO8
 spi:
   id: epaper_spi_bus
   clk_pin: GPIO7
@@ -77,58 +88,103 @@ spi:
 # ============================================================
 # I2C BUS
 # ============================================================
-# I2C bus for the PCF8563 RTC
+# Used for the PCF8563 hardware RTC.
+#
+# The SHT4x sensor is also connected to this bus at address
+# 0x44 but is intentionally not used in this configuration.
 i2c:
   sda: GPIO19
   scl: GPIO20
   scan: true
 
 # ============================================================
-# TIME / RTC
+# TIME AND RTC
 # ============================================================
-
 time:
+  # ----------------------------------------------------------
+  # Home Assistant time
+  # ----------------------------------------------------------
   - platform: homeassistant
     id: homeassistant_time
     timezone: Europe/Berlin
-
     on_time_sync:
       then:
         - logger.log: "=== HOME ASSISTANT TIME SYNCHRONIZED ==="
+
+        # Synchronize the hardware RTC with Home Assistant.
         - pcf8563.write_time:
             id: pcf8563_time
 
-  # Hardware RTC: PCF8563
+        # Schedule the next display update and sleep period.
+        - script.execute: schedule_deep_sleep
+
+  # ----------------------------------------------------------
+  # PCF8563 hardware RTC
+  # ----------------------------------------------------------
   - platform: pcf8563
     id: pcf8563_time
     address: 0x51
     update_interval: never
 
 # ============================================================
-# BATTERY MONITORING
+# SWITCHES
 # ============================================================
-# Enable the battery voltage measurement circuit.
 switch:
+  # ----------------------------------------------------------
+  # Battery measurement enable
+  # ----------------------------------------------------------
   - platform: gpio
     pin: GPIO21
     id: battery_enable
     internal: true
 
+  # ----------------------------------------------------------
+  # Deep Sleep enable
+  # ----------------------------------------------------------
+  # This switch is exposed to Home Assistant.
+  #
+  # ON:
+  #   Deep Sleep follows the configured schedule.
+  #
+  # OFF:
+  #   Deep Sleep is prevented and the device remains awake.
+  - platform: template
+    name: "Deep Sleep"
+    id: deep_sleep_enabled
+    icon: "mdi:sleep"
+    restore_mode: RESTORE_DEFAULT_ON
+    optimistic: true
+
+    on_turn_on:
+      then:
+        - deep_sleep.allow: deep_sleep_1
+        - logger.log: "=== DEEP SLEEP ENABLED ==="
+
+    on_turn_off:
+      then:
+        - deep_sleep.prevent: deep_sleep_1
+        - logger.log: "=== DEEP SLEEP DISABLED ==="
+
 # ============================================================
-# ONBOARD LED
+# ONBOARD STATUS LED
 # ============================================================
-# Onboard LED des reTerminal E1001
-# GPIO6
+# Onboard LED:
+#   GPIO6
 status_led:
   pin:
     number: GPIO6
     inverted: false
 
 # ============================================================
-# BATTERY VOLTAGE
+# SENSORS
 # ============================================================
-# Battery voltage is measured via the ADC on GPIO1.
 sensor:
+  # ----------------------------------------------------------
+  # Battery voltage
+  # ----------------------------------------------------------
+  # Battery voltage is measured through the ADC on GPIO1.
+  # The measured voltage is doubled because of the hardware
+  # voltage divider used by the reTerminal E1001.
   - platform: adc
     pin: GPIO1
     name: "Battery Voltage"
@@ -142,13 +198,17 @@ sensor:
     on_value:
       then:
         - lambda: |-
-            ESP_LOGD("battery", "Battery voltage: %.3f V", x);
+            ESP_LOGD(
+              "battery",
+              "Battery voltage: %.3f V",
+              x
+            );
 
-
-  # ==========================================================
-  # BATTERY LEVEL
-  # ==========================================================
-  # Battery percentage based on the Seeed Studio voltage curve.
+  # ----------------------------------------------------------
+  # Battery level
+  # ----------------------------------------------------------
+  # Battery percentage is calculated from the battery voltage
+  # using the voltage curve supplied for the reTerminal E1001.
   - platform: template
     name: "Battery Level"
     id: battery_level
@@ -192,33 +252,173 @@ sensor:
             );
 
 # ============================================================
-# DEEP SLEEP - TEST
+# DEEP SLEEP
 # ============================================================
-# Test:
-#   30 Sekunden aktiv
-#   30 Sekunden schlafen
-#
-# Danach wacht der ESP32-S3 automatisch wieder auf.
 deep_sleep:
   id: deep_sleep_1
-  run_duration: 30s
-  sleep_duration: 30s
 
-# --------------------------------------------------
-# Test font
-# --------------------------------------------------
+# ============================================================
+# DEEP SLEEP SCHEDULE
+# ============================================================
 
+script:
+  - id: schedule_deep_sleep
+    mode: restart
+
+    then:
+      # --------------------------------------------------------
+      # Determine current time
+      # --------------------------------------------------------
+      - lambda: |-
+          auto now = id(homeassistant_time).now();
+
+          if (!now.is_valid()) {
+            ESP_LOGW(
+              "deep_sleep",
+              "Time is not valid - staying awake"
+            );
+            return;
+          }
+
+          ESP_LOGD(
+            "deep_sleep",
+            "Current time: %02d:%02d:%02d",
+            now.hour,
+            now.minute,
+            now.second
+          );
+
+      # --------------------------------------------------------
+      # Decide whether to refresh the display
+      #
+      # Skip the refresh when:
+      # - Deep Sleep is enabled and it is 23:00 or later
+      # - Deep Sleep is enabled and the next full hour is
+      #   30 seconds away or less
+      # --------------------------------------------------------
+      - if:
+          condition:
+            lambda: |-
+              auto now = id(homeassistant_time).now();
+
+              if (!now.is_valid()) {
+                return false;
+              }
+
+              if (!id(deep_sleep_enabled).state) {
+                return false;
+              }
+
+              const int seconds_to_hour =
+                3600 - (now.minute * 60) - now.second;
+
+              return now.hour >= 23 || seconds_to_hour <= 30;
+
+          then:
+            - logger.log:
+                level: INFO
+                format: "Skipping display refresh: close to scheduled wake-up or night mode"
+
+          else:
+            # Update battery voltage
+            - component.update: battery_voltage
+            - delay: 200ms
+
+            # Recalculate battery percentage
+            - component.update: battery_level
+            - delay: 100ms
+
+            # Refresh the ePaper display
+            - component.update: epaper_display
+
+            # Allow the display update to finish
+            - delay: 1s
+
+      # --------------------------------------------------------
+      # Enter Deep Sleep according to the schedule
+      # --------------------------------------------------------
+      - if:
+          condition:
+            lambda: |-
+              return id(deep_sleep_enabled).state &&
+                     id(homeassistant_time).now().is_valid();
+
+          then:
+            - deep_sleep.enter:
+                id: deep_sleep_1
+
+                sleep_duration: !lambda |-
+                  auto now = id(homeassistant_time).now();
+
+                  uint32_t sleep_seconds;
+
+                  // ------------------------------------------------
+                  // Night mode: sleep until 06:00
+                  // ------------------------------------------------
+                  if (now.hour >= 23) {
+
+                    sleep_seconds =
+                      ((24 - now.hour) * 3600) -
+                      (now.minute * 60) -
+                      now.second +
+                      (6 * 3600);
+
+                    ESP_LOGD(
+                      "deep_sleep",
+                      "Night mode: sleeping until 06:00"
+                    );
+
+                  // ------------------------------------------------
+                  // Day mode: sleep until the next full hour
+                  // ------------------------------------------------
+                  } else {
+
+                    sleep_seconds =
+                      3600 -
+                      (now.minute * 60) -
+                      now.second;
+
+                    ESP_LOGD(
+                      "deep_sleep",
+                      "Day mode: sleeping until the next full hour"
+                    );
+                  }
+
+                  ESP_LOGD(
+                    "deep_sleep",
+                    "Sleep duration: %lu seconds",
+                    static_cast<unsigned long>(sleep_seconds)
+                  );
+
+                  return sleep_seconds * 1000UL;
+
+          else:
+            - logger.log:
+                level: INFO
+                format: "Deep Sleep disabled or time invalid"
+
+# ============================================================
+# FONTS
+# ============================================================
 font:
-  - file: "gfonts://Inter@700"
+  # ----------------------------------------------------------
+  # Main display font
+  # ----------------------------------------------------------
+  - file: "gfonts://Roboto@700"
     id: font_medium
     size: 32
 
-# --------------------------------------------------
-# ePaper display
-# 800 x 480
-# --------------------------------------------------
-
+# ============================================================
+# EPAPER DISPLAY
+# ============================================================
+# Display:
+#   Seeed Studio reTerminal E1001
+#   Waveshare 7.5"
+#   Resolution: 800 x 480
 display:
+  # ----------------------------------------------------------
+  # Waveshare ePaper
+  # ----------------------------------------------------------
   - platform: waveshare_epaper
     id: epaper_display
     model: 7.50inv2
@@ -234,16 +434,23 @@ display:
       number: GPIO13
       inverted: true
 
-    update_interval: 300s
+    # Display is updated manually by the Deep Sleep schedule.
+    update_interval: never
 
     lambda: |-
-      ESP_LOGD("display", "=== ePaper display refresh ===");
+      // --------------------------------------------------------
+      // Display refresh
+      // --------------------------------------------------------
+      ESP_LOGD(
+        "display",
+        "=== ePaper display refresh ==="
+      );
 
-      // ========================================================
-      // DETERMINE DISPLAY MODE
-      // ========================================================
-      // Normal:
-      //   > 10 %  -> black text on white background
+      // --------------------------------------------------------
+      // Determine display mode
+      // --------------------------------------------------------
+      // Normal battery level:
+      //   > 10 % -> black text on white background
       //
       // Low battery:
       //   <= 10 % -> white text on black background
@@ -258,30 +465,28 @@ display:
         inverted ? "YES" : "NO"
       );
 
-
-      // ========================================================
-      // BACKGROUND
-      // ========================================================
-      // ESPHome waveshare_epaper uses inverted color semantics.
+      // --------------------------------------------------------
+      // Background
+      // --------------------------------------------------------
+      // ESPHome's ePaper color handling is inverted for this
+      // display configuration.
       if (inverted) {
-        // Low battery: black background
+        // Low battery: black background.
         it.fill(Color::WHITE);
       } else {
-        // Normal: white background
+        // Normal operation: white background.
         it.fill(Color::BLACK);
       }
 
-
-      // ========================================================
-      // TEXT COLOR
-      // ========================================================
+      // --------------------------------------------------------
+      // Text color
+      // --------------------------------------------------------
       const Color text_color =
         inverted ? Color::BLACK : Color::WHITE;
 
-
-      // ========================================================
-      // DISPLAY CONTENT
-      // ========================================================
+      // --------------------------------------------------------
+      // Display content
+      // --------------------------------------------------------
       it.printf(
         400, 15,
         id(font_medium),
@@ -295,5 +500,5 @@ display:
         id(font_medium),
         text_color,
         TextAlign::TOP_CENTER,
-        "ESPHome Test Deep Sleep"
+        "ESPHome Test"
       );
