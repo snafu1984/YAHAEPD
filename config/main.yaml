@@ -30,11 +30,15 @@ esp32:
 logger:
   hardware_uart: UART0
 
-# --------------------------------------------------
-# Home Assistant API
-# --------------------------------------------------
-
+# ============================================================
+# ESPHOME API
+# ============================================================
+# Verschlüsselte Kommunikation zwischen Home Assistant
+# und dem reTerminal E1001.
 api:
+  encryption:
+    key: !secret api_encryption_key_3
+
   on_client_connected:
     then:
       - logger.log: "=== HOME ASSISTANT API CONNECTED ==="
@@ -187,6 +191,19 @@ sensor:
               id(battery_voltage).state
             );
 
+# ============================================================
+# DEEP SLEEP - TEST
+# ============================================================
+# Test:
+#   30 Sekunden aktiv
+#   30 Sekunden schlafen
+#
+# Danach wacht der ESP32-S3 automatisch wieder auf.
+deep_sleep:
+  id: deep_sleep_1
+  run_duration: 30s
+  sleep_duration: 30s
+
 # --------------------------------------------------
 # Test font
 # --------------------------------------------------
@@ -278,5 +295,5 @@ display:
         id(font_medium),
         text_color,
         TextAlign::TOP_CENTER,
-        "ESPHome Test LED"
+        "ESPHome Test Deep Sleep"
       );
