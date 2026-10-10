@@ -66,3 +66,43 @@ text_sensor:
   - platform: homeassistant
     id: calendar_d4
     entity_id: sensor.display_d4
+
+  # ==========================================================
+  # HOURLY WEATHER FORECAST
+  # ==========================================================
+
+  - platform: homeassistant
+    id: forecast_hour_1
+    entity_id: sensor.display_forecast_hour_1
+
+  - platform: homeassistant
+    id: forecast_hour_2
+    entity_id: sensor.display_forecast_hour_2
+
+  - platform: homeassistant
+    id: forecast_hour_3
+    entity_id: sensor.display_forecast_hour_3
+
+  - platform: homeassistant
+    id: forecast_hour_4
+    entity_id: sensor.display_forecast_hour_4
+
+  # ==========================================================
+  # DAILY WEATHER FORECAST
+  # ==========================================================
+
+  - platform: homeassistant
+    id: forecast_day_1
+    entity_id: sensor.display_forecast_day_1
+
+  - platform: homeassistant
+    id: forecast_day_2
+    entity_id: sensor.display_forecast_day_2
+
+  - platform: homeassistant
+    id: forecast_day_3
+    entity_id: sensor.display_forecast_day_3
+
+  - platform: homeassistant
+    id: forecast_day_4
+    entity_id: sensor.display_forecast_day_4
