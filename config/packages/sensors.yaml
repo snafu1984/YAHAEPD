@@ -1,8 +1,85 @@
+text_sensor:
+
+  # ==========================================================
+  # CURRENT WEATHER AND MOON PHASE
+  # ==========================================================
+
+  - platform: homeassistant
+    id: current_weather_condition
+    entity_id: weather.forecast_home
+
+  - platform: homeassistant
+    id: moon_phase
+    entity_id: sensor.moon_phase
+
+  # --------------------------------------------------------
+  # SUNRISE
+  # Nächster Sonnenaufgang aus Home Assistant
+  # Quelle: sun.sun
+  # Attribut: next_rising
+  # --------------------------------------------------------
+  - platform: homeassistant
+    entity_id: sun.sun
+    attribute: next_rising
+    id: sunrise_time
+    internal: true
+
+  # --------------------------------------------------------
+  # SUNSET
+  # Nächster Sonnenuntergang aus Home Assistant
+  # Quelle: sun.sun
+  # Attribut: next_setting
+  # --------------------------------------------------------
+  - platform: homeassistant
+    entity_id: sun.sun
+    attribute: next_setting
+    id: sunset_time
+    internal: true
+
+  # ==========================================================
+  # HOURLY WEATHER FORECAST
+  # ==========================================================
+
+  - platform: homeassistant
+    id: forecast_hour_1
+    entity_id: sensor.display_forecast_hour_1
+
+  - platform: homeassistant
+    id: forecast_hour_2
+    entity_id: sensor.display_forecast_hour_2
+
+  - platform: homeassistant
+    id: forecast_hour_3
+    entity_id: sensor.display_forecast_hour_3
+
+  - platform: homeassistant
+    id: forecast_hour_4
+    entity_id: sensor.display_forecast_hour_4
+
+  # ==========================================================
+  # DAILY WEATHER FORECAST
+  # ==========================================================
+
+  - platform: homeassistant
+    id: forecast_day_1
+    entity_id: sensor.display_forecast_day_1
+
+  - platform: homeassistant
+    id: forecast_day_2
+    entity_id: sensor.display_forecast_day_2
+
+  - platform: homeassistant
+    id: forecast_day_3
+    entity_id: sensor.display_forecast_day_3
+
+  - platform: homeassistant
+    id: forecast_day_4
+    entity_id: sensor.display_forecast_day_4
+
 # ============================================================
 # BIRTHDAY CALENDAR SENSORS
 # ============================================================
 
-text_sensor:
   - platform: homeassistant
     id: calendar_a1
     entity_id: sensor.display_a1
@@ -67,42 +144,23 @@ text_sensor:
     id: calendar_d4
     entity_id: sensor.display_d4
 
-  # ==========================================================
-  # HOURLY WEATHER FORECAST
-  # ==========================================================
+
+# ============================================================
+# CURRENT WEATHER AND RAINFALL SENSORS
+# ============================================================
+
+sensor:
+  - platform: homeassistant
+    id: current_temperature
+    entity_id: weather.forecast_home
+    attribute: temperature
 
   - platform: homeassistant
-    id: forecast_hour_1
-    entity_id: sensor.display_forecast_hour_1
+    id: rain_today
+    entity_id: sensor.plantage_niederschlag_heute
 
   - platform: homeassistant
-    id: forecast_hour_2
-    entity_id: sensor.display_forecast_hour_2
+    id: rain_yesterday
+    entity_id: sensor.plantage_niederschlag_letzter_tag
 
-  - platform: homeassistant
-    id: forecast_hour_3
-    entity_id: sensor.display_forecast_hour_3
 
-  - platform: homeassistant
-    id: forecast_hour_4
-    entity_id: sensor.display_forecast_hour_4
-
-  # ==========================================================
-  # DAILY WEATHER FORECAST
-  # ==========================================================
-
-  - platform: homeassistant
-    id: forecast_day_1
-    entity_id: sensor.display_forecast_day_1
-
-  - platform: homeassistant
-    id: forecast_day_2
-    entity_id: sensor.display_forecast_day_2
-
-  - platform: homeassistant
-    id: forecast_day_3
-    entity_id: sensor.display_forecast_day_3
-
-  - platform: homeassistant
-    id: forecast_day_4
-    entity_id: sensor.display_forecast_day_4
