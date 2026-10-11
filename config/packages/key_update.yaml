@@ -1,0 +1,60 @@
+
+# ============================================================
+# KEY0 - Manueller Display-Refresh
+# Seeed reTerminal E1001 / ESP32-S3
+# ============================================================
+#
+# KEY0: GPIO3, rechter grüner Taster, aktiv LOW
+#
+# Beim Tastendruck im Deep Sleep:
+#   - ESP32-S3 wacht über EXT1 auf.
+#   - Display-Treiber wird beim Booten neu initialisiert.
+#   - Wake-up wird erkannt und der Refresh vorgemerkt.
+#   - Der Refresh erfolgt nach der HA-Zeit-Synchronisierung.
+# ============================================================
+
+globals:
+  - id: key_update_wakeup
+    type: bool
+    restore_value: no
+    initial_value: "false"
+
+esphome:
+  on_boot:
+    - priority: -100
+      then:
+        - lambda: |-
+            const esp_sleep_wakeup_cause_t cause =
+              esp_sleep_get_wakeup_cause();
+
+            ESP_LOGI(
+              "key_update",
+              "Wake-up cause raw value: %d",
+              static_cast<int>(cause)
+            );
+
+            id(key_update_wakeup) =
+              (cause == ESP_SLEEP_WAKEUP_EXT1);
+
+            if (id(key_update_wakeup)) {
+              ESP_LOGI(
+                "key_update",
+                "KEY0 wake-up detected (EXT1): forcing display refresh"
+              );
+            } else {
+              ESP_LOGI(
+                "key_update",
+                "No KEY0 wake-up; wake-up cause: %d",
+                static_cast<int>(cause)
+              );
+            }
+
+deep_sleep:
+  id: deep_sleep_1
+  esp32_ext1_wakeup:
+    pins:
+      - number: GPIO3
+        mode:
+          input: true
+          pullup: true
+    mode: ANY_LOW

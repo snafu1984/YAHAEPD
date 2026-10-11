@@ -18,9 +18,29 @@ esphome:
   on_boot:
     priority: 600
     then:
-      - switch.turn_on: battery_enable
-      - delay: 200ms
-      - component.update: battery_voltage
+    - lambda: |-
+        const esp_sleep_wakeup_cause_t cause =
+        esp_sleep_get_wakeup_cause();
+
+              id(key_update_wakeup) =
+                (cause == ESP_SLEEP_WAKEUP_EXT1);
+
+              if (id(key_update_wakeup)) {
+                ESP_LOGI(
+                  "key_update",
+                  "KEY0 wake-up detected (EXT1): forcing display refresh"
+                );
+              } else {
+                ESP_LOGI(
+                  "key_update",
+                  "No KEY0 wake-up; wake-up cause: %d",
+                  static_cast<int>(cause)
+                );
+              }
+
+    - switch.turn_on: battery_enable
+    - delay: 200ms
+    - component.update: battery_voltage
 
 # ============================================================
 # ESP32
@@ -39,6 +59,7 @@ packages:
   sensors: !include packages/sensors.yaml
   fonts: !include packages/font.yaml
   symbols: !include packages/symbol.yaml
+  key_update: !include packages/key_update.yaml
 
 # ============================================================
 # LOGGER
@@ -306,6 +327,7 @@ script:
       # - Deep Sleep is enabled and the next full hour is
       #   30 seconds away or less
       # --------------------------------------------------------
+
       - if:
           condition:
             lambda: |-
@@ -319,30 +341,34 @@ script:
                 return false;
               }
 
+              // Manueller KEY0-Wake-up hat Vorrang.
+              if (id(key_update_wakeup)) {
+                ESP_LOGI(
+                  "key_update",
+                  "Manual wake-up overrides the scheduled refresh skip"
+                );
+                return false;
+              }
+
               const int seconds_to_hour =
                 3600 - (now.minute * 60) - now.second;
 
               return now.hour >= 23 || seconds_to_hour <= 30;
-
           then:
             - logger.log:
                 level: INFO
                 format: "Skipping display refresh: close to scheduled wake-up or night mode"
-
           else:
-            # Update battery voltage
+            # Hier deinen bisherigen Refresh-Block unverändert beibehalten.
             - component.update: battery_voltage
             - delay: 200ms
-
-            # Recalculate battery percentage
             - component.update: battery_level
             - delay: 100ms
-
-            # Refresh the ePaper display
             - component.update: epaper_display
-
-            # Allow the display update to finish
             - delay: 1s
+            - lambda: |-
+                id(key_update_wakeup) = false;
+
 
       # --------------------------------------------------------
       # Enter Deep Sleep according to the schedule
