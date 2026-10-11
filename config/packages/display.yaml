@@ -85,6 +85,16 @@ font:
       - " "           # Leerzeichen
 
   # ------------------------------------------------------------
+  # Moon phase name
+  # Deutsche Bezeichnung der Mondphase
+  # Schrift: Gotham Rounded Bold, Größe 22
+  # ------------------------------------------------------------
+  - file: "../fonts/Gotham-Rounded-Bold.ttf"
+    id: font_moon_name
+    size: 22
+    glyphs: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÄÖÜäöüß "
+
+  # ------------------------------------------------------------
   # Forecast weather icon
   # ------------------------------------------------------------
 
@@ -142,7 +152,7 @@ font:
   # ------------------------------------------------------------
 
   - file: "../fonts/materialdesignicons-webfont.ttf"
-    id: font_moon
+    id: sym_moon
     size: 64
     glyphs:
       - "\U000F0F61" # moon-new
@@ -433,6 +443,66 @@ display:
           sunset.substr(11, 5).c_str()
         );
       }
+
+      // --------------------------------------------------------
+      // MOON PHASE
+      // Aktuelle Mondphase mit Symbol und deutscher Bezeichnung
+      // --------------------------------------------------------
+
+      // Aktuelle Mondphase aus Home Assistant auslesen
+      const std::string moon = id(moon_phase).state;
+
+      // Position der Mondphasenanzeige
+      const int moon_x = 133;
+      const int moon_y = 365;
+
+      // Standardwerte: Neumond
+      const char *moon_icon = "\U000F0F61";
+      const char *moon_name = "Neumond";
+
+      // Mondphase anhand des Home-Assistant-Zustands bestimmen
+      if (moon == "waxing_crescent") {
+        moon_icon = "\U000F0F62";
+        moon_name = "Zunehmende Sichel";
+      } else if (moon == "first_quarter") {
+        moon_icon = "\U000F0F63";
+        moon_name = "Erstes Viertel";
+      } else if (moon == "waxing_gibbous") {
+        moon_icon = "\U000F0F64";
+        moon_name = "Zunehmender Mond";
+      } else if (moon == "full_moon") {
+        moon_icon = "\U000F0F65";
+        moon_name = "Vollmond";
+      } else if (moon == "waning_gibbous") {
+        moon_icon = "\U000F0F66";
+        moon_name = "Abnehmender Mond";
+      } else if (moon == "last_quarter") {
+        moon_icon = "\U000F0F67";
+        moon_name = "Letztes Viertel";
+      } else if (moon == "waning_crescent") {
+        moon_icon = "\U000F0F68";
+        moon_name = "Abnehmende Sichel";
+      }
+
+      // Mondphasensymbol mittig ausgeben
+      it.printf(
+        moon_x, moon_y,
+        id(sym_moon),
+        text_color,
+        TextAlign::TOP_CENTER,
+        "%s",
+        moon_icon
+      );
+
+      // Deutsche Bezeichnung unterhalb des Symbols ausgeben
+      it.printf(
+        moon_x, moon_y + 68,
+        id(font_moon_name),
+        text_color,
+        TextAlign::TOP_CENTER,
+        "%s",
+        moon_name
+      );
 
       // --------------------------------------------------------
       // WEATHER FORECAST

@@ -1,16 +1,22 @@
 text_sensor:
 
   # ==========================================================
-  # CURRENT WEATHER AND MOON PHASE
+  # CURRENT WEATHER
   # ==========================================================
 
   - platform: homeassistant
     id: current_weather_condition
     entity_id: weather.forecast_home
 
+  # --------------------------------------------------------
+  # MOON PHASE
+  # Aktuelle Mondphase aus Home Assistant
+  # Quelle: sensor.moon_phase
+  # --------------------------------------------------------
   - platform: homeassistant
-    id: moon_phase
     entity_id: sensor.moon_phase
+    id: moon_phase
+    internal: true
 
   # --------------------------------------------------------
   # SUNRISE
