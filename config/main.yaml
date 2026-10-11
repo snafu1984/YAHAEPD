@@ -37,7 +37,8 @@ esp32:
 packages:
   display: !include packages/display.yaml
   sensors: !include packages/sensors.yaml
-
+  fonts: !include packages/font.yaml
+  symbols: !include packages/symbol.yaml
 
 # ============================================================
 # LOGGER

@@ -1,0 +1,57 @@
+# ============================================================
+# FONTS
+# ============================================================
+
+font:
+
+# ============================================================
+# FONT 18
+# Used in forecast hourly/daily, birthday calender
+# ============================================================
+
+  - file: "../fonts/Gotham-Rounded-Bold.ttf"
+    id: font_18
+    size: 18
+    glyphs:
+      - "abcdefghijklmnopqrstuvwxyz"
+      - "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      - "äöüÄÖÜß"
+      - "0123456789"
+      - " "
+      - "-"
+      - ",.;:%°/"
+
+# ============================================================
+# FONT 22
+# Used in current weather, current precipitation,
+#  Sunrise / Sunset and moon phase name
+# ============================================================
+
+  - file: "../fonts/Gotham-Rounded-Bold.ttf"
+    id: font_22
+    size: 22
+    glyphs:
+      - "abcdefghijklmnopqrstuvwxyz"
+      - "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      - "äöüÄÖÜß"
+      - "0123456789"
+      - " "
+      - "-"
+      - ",.;:%°/"
+
+# ============================================================
+# FONT 42
+# Used in current temperature and curren date
+# ============================================================
+
+  - file: "../fonts/Gotham-Rounded-Bold.ttf"
+    id: font_42
+    size: 42
+    glyphs:
+      - "abcdefghijklmnopqrstuvwxyz"
+      - "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      - "äöüÄÖÜß"
+      - "0123456789"
+      - " "
+      - "-"
+      - ",.;:%°/"

@@ -1,189 +1,3 @@
-# ============================================================
-# FONTS
-# ============================================================
-
-font:
-  # Main font
-  - file: "../fonts/Gotham-Rounded-Bold.ttf"
-    id: font_medium
-    size: 60
-    glyphs:
-      - "abcdefghijklmnopqrstuvwxyz"
-      - "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      - "äöüÄÖÜß"
-      - "0123456789"
-      - " "
-      - "-"
-      - ",.;:%°/"
-
-  # Calendar font
-  - file: "../fonts/Gotham-Rounded-Bold.ttf"
-    id: font_calendar
-    size: 18
-    glyphs:
-      - "abcdefghijklmnopqrstuvwxyz"
-      - "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      - "äöüÄÖÜß"
-      - "0123456789"
-      - " "
-      - "-"
-      - ",.;:%°/"
-
-  # ------------------------------------------------------------
-  # Current weather condition text
-  # ------------------------------------------------------------
-  # Displays the German description of the current weather,
-  # for example "Sonnig", "Bewölkt" or "Regen".
-  # ------------------------------------------------------------
-  - file: "../fonts/Gotham-Rounded-Bold.ttf"
-    id: font_weather_condition
-    size: 22
-    glyphs: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÄÖÜäöüß -"
-
-  # ------------------------------------------------------------
-  # Current temperature
-  # ------------------------------------------------------------
-  # Displays the current temperature, including the degree
-  # symbol and the unit, for example "18°C" or "-2°C".
-  # ------------------------------------------------------------
-  - file: "../fonts/Gotham-Rounded-Bold.ttf"
-    id: font_current_temperature
-    size: 42
-    glyphs: "0123456789.-°C "
-
-  # ------------------------------------------------------------
-  # Current date
-  # ------------------------------------------------------------
-  - file: "../fonts/Gotham-Rounded-Bold.ttf"
-    id: font_date
-    size: 42
-    glyphs: "SMDFoira0123456789. "
-
-  # ------------------------------------------------------------
-  # Current precipitation
-  # ------------------------------------------------------------
-  # Displays today's and yesterday's precipitation in mm.
-  # ------------------------------------------------------------
-  - file: "../fonts/Gotham-Rounded-Bold.ttf"
-    id: font_current_rain
-    size: 22
-    glyphs:
-      - "0123456789"
-      - "m"
-      - " "
-      - "-"
-      - ",.;:%°/"
-
-  # --------------------------------------------------------
-  # Sunrise / Sunset
-  # --------------------------------------------------------
-  - file: "../fonts/Gotham-Rounded-Bold.ttf"
-    id: font_sun
-    size: 22
-    glyphs:
-      - "0123456789:" # Ziffern und Doppelpunkt für die Uhrzeit
-      - " "           # Leerzeichen
-
-  # ------------------------------------------------------------
-  # Moon phase name
-  # Deutsche Bezeichnung der Mondphase
-  # Schrift: Gotham Rounded Bold, Größe 22
-  # ------------------------------------------------------------
-  - file: "../fonts/Gotham-Rounded-Bold.ttf"
-    id: font_moon_name
-    size: 22
-    glyphs: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÄÖÜäöüß "
-
-  # ------------------------------------------------------------
-  # Forecast weather icon
-  # ------------------------------------------------------------
-
-  - file: "../fonts/materialdesignicons-webfont.ttf"
-    id: font_weather
-    size: 60
-    glyphs:
-      - "\U000F0599" # weather-sunny
-      - "\U000F0594" # weather-night
-      - "\U000F0595" # weather-partly-cloudy
-      - "\U000F0590" # weather-cloudy
-      - "\U000F0597" # weather-rainy
-      - "\U000F0596" # weather-pouring
-      - "\U000F059B" # weather-snowy
-      - "\U000F067F" # weather-snowy-rainy
-      - "\U000F0591" # weather-fog
-      - "\U000F059D" # weather-windy
-      - "\U000F059E" # weather-windy-variant
-      - "\U000F0592" # weather-hail
-      - "\U000F0593" # weather-lightning
-      - "\U000F067E" # weather-lightning-rainy
-      - "\U000F058E" # water-percent
-      - "\U000F058C" # water
-
-  # ------------------------------------------------------------
-  # Current weather icon
-  # ------------------------------------------------------------
-  # Displays the current weather condition as a Material Design
-  # Icon (MDI).
-  # The glyphs are defined in the existing font configuration.
-  # ------------------------------------------------------------
-  - file: "../fonts/materialdesignicons-webfont.ttf"
-    id: font_current_weather
-    size: 100
-    glyphs:
-      - "\U000F0599" # sunny
-      - "\U000F0594" # clear-night
-      - "\U000F0595" # partlycloudy
-      - "\U000F0590" # cloudy
-      - "\U000F0597" # rainy
-      - "\U000F0596" # pouring
-      - "\U000F059B" # snowy
-      - "\U000F067F" # snowy-rainy
-      - "\U000F0591" # fog
-      - "\U000F059D" # windy
-      - "\U000F059E" # windy-variant
-      - "\U000F0592" # hail
-      - "\U000F0593" # lightning
-      - "\U000F067E" # lightning-rainy
-
-
-
-  # ------------------------------------------------------------
-  # Moon phase icons
-  # ------------------------------------------------------------
-
-  - file: "../fonts/materialdesignicons-webfont.ttf"
-    id: sym_moon
-    size: 64
-    glyphs:
-      - "\U000F0F61" # moon-new
-      - "\U000F0F62" # moon-waxing-crescent
-      - "\U000F0F63" # moon-first-quarter
-      - "\U000F0F64" # moon-waxing-gibbous
-      - "\U000F0F65" # moon-full
-      - "\U000F0F66" # moon-waning-gibbous
-      - "\U000F0F67" # moon-last-quarter
-      - "\U000F0F68" # moon-waning-crescent
-
-  # ------------------------------------------------------------
-  # Waterdrop forecast
-  # ------------------------------------------------------------
-
-  - file: "../fonts/materialdesignicons-webfont.ttf"
-    id: font_weather_small
-    size: 18
-    glyphs:
-      - "\U000F058C" # water
-
-  # --------------------------------------------------------
-  # Sunrise / Sunset
-  # Kleine Symbole für Sonnenauf- und Sonnenuntergang
-  # --------------------------------------------------------
-  - file: "../fonts/materialdesignicons-webfont.ttf"
-    id: sym_sun
-    size: 22
-    glyphs:
-      - "\U000F059C"  # weather-sunset-up
-      - "\U000F059B"  # weather-sunset-down
 
 # ============================================================
 # EPAPER DISPLAY
@@ -295,7 +109,7 @@ display:
 
         it.printf(
           133, 16,
-          id(font_date),
+          id(font_42),
           text_color,
           TextAlign::TOP_CENTER,
           "%s %02d.%02d.",
@@ -350,7 +164,7 @@ display:
       // Current weather icon.
       it.printf(
         133, 100,
-        id(font_current_weather),
+        id(sym_current_weather),
         text_color,
         TextAlign::CENTER,
         "%s",
@@ -360,7 +174,7 @@ display:
       // German weather description.
       it.printf(
         133, 155,
-        id(font_weather_condition),
+        id(font_22),
         text_color,
         TextAlign::TOP_CENTER,
         "%s",
@@ -371,7 +185,7 @@ display:
       if (!isnan(id(current_temperature).state)) {
         it.printf(
           133, 195,
-          id(font_current_temperature),
+          id(font_42),
           text_color,
           TextAlign::TOP_CENTER,
           "%.1f°C",
@@ -389,7 +203,7 @@ display:
 
       it.printf(
         133, 255,
-        id(font_current_rain),
+        id(font_22),
         text_color,
         TextAlign::TOP_CENTER,
         "%.1f mm / %.1f mm",
@@ -417,7 +231,7 @@ display:
         // Sunrise: Time
         it.printf(
           55, 285,
-          id(font_sun),
+          id(font_22),
           text_color,
           TextAlign::TOP_LEFT,
           "%s",
@@ -436,7 +250,7 @@ display:
         // Sunset: Time
         it.printf(
           165, 285,
-          id(font_sun),
+          id(font_22),
           text_color,
           TextAlign::TOP_LEFT,
           "%s",
@@ -454,11 +268,11 @@ display:
 
       // Position der Mondphasenanzeige
       const int moon_x = 133;
-      const int moon_y = 365;
+      const int moon_y = 315;
 
       // Standardwerte: Neumond
-      const char *moon_icon = "\U000F0F61";
-      const char *moon_name = "Neumond";
+      const char *moon_icon = "\U000F0F65";
+      const char *moon_name = "Vollmond";
 
       // Mondphase anhand des Home-Assistant-Zustands bestimmen
       if (moon == "waxing_crescent") {
@@ -496,8 +310,8 @@ display:
 
       // Deutsche Bezeichnung unterhalb des Symbols ausgeben
       it.printf(
-        moon_x, moon_y + 68,
-        id(font_moon_name),
+        moon_x, moon_y + 95,
+        id(font_22),
         text_color,
         TextAlign::TOP_CENTER,
         "%s",
@@ -540,29 +354,29 @@ display:
         const int cx = wx + i * cw + cw / 2;
 
         it.printf(
-          cx, 10, id(font_calendar), text_color,
+          cx, 10, id(font_18), text_color,
           TextAlign::TOP_CENTER, "%s", time
         );
 
         it.printf(
-          cx, 31, id(font_weather), text_color,
+          cx, 31, id(sym_weather), text_color,
           TextAlign::TOP_CENTER, "%s", weather_icon(condition)
         );
 
         it.printf(
-          cx, 94, id(font_calendar), text_color,
+          cx, 94, id(font_18), text_color,
           TextAlign::TOP_CENTER, "%.1f °C", temp
         );
 
               // Niederschlag: Tropfen | Wahrscheinlichkeit / Menge
       it.printf(
-        cx - 48, 113, id(font_weather_small), text_color,
+        cx - 48, 113, id(sym_weather_small), text_color,
         TextAlign::TOP_CENTER, "\U000F058C"
       );
 
       it.printf(
-        cx + 12, 113, id(font_calendar), text_color,
-        TextAlign::TOP_CENTER, "%.0f / %.1f",
+        cx + 12, 113, id(font_18), text_color,
+        TextAlign::TOP_CENTER, "%.0f%% / %.1f",
         probability, precipitation
       );
       }
@@ -598,31 +412,31 @@ display:
 
         // Weekday and date
         it.printf(
-          cx, 165, id(font_calendar), text_color,
+          cx, 165, id(font_18), text_color,
           TextAlign::TOP_CENTER, "%s %s", day, date
         );
 
         // Weather icon
         it.printf(
-          cx, 187, id(font_weather), text_color,
+          cx, 187, id(sym_weather), text_color,
           TextAlign::TOP_CENTER, "%s", weather_icon(condition)
         );
 
         // High and low temperatures
         it.printf(
-          cx, 251, id(font_calendar), text_color,
+          cx, 251, id(font_18), text_color,
           TextAlign::TOP_CENTER, "%.1f / %.1f °C", high, low
         );
 
         // Niederschlag: Tropfen | Wahrscheinlichkeit / Menge
         it.printf(
-          cx - 48, 276, id(font_weather_small), text_color,
+          cx - 48, 276, id(sym_weather_small), text_color,
           TextAlign::TOP_CENTER, "\U000F058C"
         );
 
         it.printf(
-          cx + 12, 276, id(font_calendar), text_color,
-          TextAlign::TOP_CENTER, "%.0f / %.1f",
+          cx + 12, 276, id(font_18), text_color,
+          TextAlign::TOP_CENTER, "%.0f%% / %.1f",
           probability, precipitation
         );
       }
@@ -732,7 +546,7 @@ display:
         it.printf(
           (x0 + x1) / 2,
           center_y,
-          id(font_calendar),
+          id(font_18),
           text_color,
           TextAlign::CENTER,
           "%s",
@@ -743,7 +557,7 @@ display:
         it.printf(
           (x1 + x2) / 2,
           center_y,
-          id(font_calendar),
+          id(font_18),
           text_color,
           TextAlign::CENTER,
           "%s",
@@ -754,7 +568,7 @@ display:
         it.printf(
           x2 + 8,
           center_y,
-          id(font_calendar),
+          id(font_18),
           text_color,
           TextAlign::CENTER_LEFT,
           "%s",
@@ -765,7 +579,7 @@ display:
         it.printf(
           (x3 + x4) / 2,
           center_y,
-          id(font_calendar),
+          id(font_18),
           text_color,
           TextAlign::CENTER,
           "%s",

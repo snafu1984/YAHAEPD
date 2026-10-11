@@ -1,0 +1,94 @@
+# ============================================================
+# Symbols
+# ============================================================
+
+font:
+
+  # ------------------------------------------------------------
+  # Waterdrop forecast
+  # ------------------------------------------------------------
+
+  - file: "../fonts/materialdesignicons-webfont.ttf"
+    id: sym_weather_small
+    size: 18
+    glyphs:
+      - "\U000F058C" # water
+
+  # --------------------------------------------------------
+  # Sunrise / Sunset
+  # Kleine Symbole für Sonnenauf- und Sonnenuntergang
+  # --------------------------------------------------------
+  - file: "../fonts/materialdesignicons-webfont.ttf"
+    id: sym_sun
+    size: 22
+    glyphs:
+      - "\U000F059C"  # weather-sunset-up
+      - "\U000F059B"  # weather-sunset-down
+
+  # ------------------------------------------------------------
+  # Forecast weather icon
+  # ------------------------------------------------------------
+
+  - file: "../fonts/materialdesignicons-webfont.ttf"
+    id: sym_weather
+    size: 60
+    glyphs:
+      - "\U000F0599" # weather-sunny
+      - "\U000F0594" # weather-night
+      - "\U000F0595" # weather-partly-cloudy
+      - "\U000F0590" # weather-cloudy
+      - "\U000F0597" # weather-rainy
+      - "\U000F0596" # weather-pouring
+      - "\U000F059B" # weather-snowy
+      - "\U000F067F" # weather-snowy-rainy
+      - "\U000F0591" # weather-fog
+      - "\U000F059D" # weather-windy
+      - "\U000F059E" # weather-windy-variant
+      - "\U000F0592" # weather-hail
+      - "\U000F0593" # weather-lightning
+      - "\U000F067E" # weather-lightning-rainy
+      - "\U000F058E" # water-percent
+      - "\U000F058C" # water
+
+  # ------------------------------------------------------------
+  # Current weather icon
+  # ------------------------------------------------------------
+  # Displays the current weather condition as a Material Design
+  # Icon (MDI).
+  # The glyphs are defined in the existing font configuration.
+  # ------------------------------------------------------------
+  - file: "../fonts/materialdesignicons-webfont.ttf"
+    id: sym_current_weather
+    size: 100
+    glyphs:
+      - "\U000F0599" # sunny
+      - "\U000F0594" # clear-night
+      - "\U000F0595" # partlycloudy
+      - "\U000F0590" # cloudy
+      - "\U000F0597" # rainy
+      - "\U000F0596" # pouring
+      - "\U000F059B" # snowy
+      - "\U000F067F" # snowy-rainy
+      - "\U000F0591" # fog
+      - "\U000F059D" # windy
+      - "\U000F059E" # windy-variant
+      - "\U000F0592" # hail
+      - "\U000F0593" # lightning
+      - "\U000F067E" # lightning-rainy
+
+  # ------------------------------------------------------------
+  # Moon phase icons
+  # ------------------------------------------------------------
+
+  - file: "../fonts/materialdesignicons-webfont.ttf"
+    id: sym_moon
+    size: 100
+    glyphs:
+      - "\U000F0F61" # moon-new
+      - "\U000F0F62" # moon-waxing-crescent
+      - "\U000F0F63" # moon-first-quarter
+      - "\U000F0F64" # moon-waxing-gibbous
+      - "\U000F0F65" # moon-full
+      - "\U000F0F66" # moon-waning-gibbous
+      - "\U000F0F67" # moon-last-quarter
+      - "\U000F0F68" # moon-waning-crescent
