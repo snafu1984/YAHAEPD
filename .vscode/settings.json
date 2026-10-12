@@ -12,7 +12,8 @@
     },
 
     "yaml.customTags": [
-    "!secret scalar"
+        "!secret scalar",
+        "!lambda scalar"
     ],
     "yaml.validate": true,
 

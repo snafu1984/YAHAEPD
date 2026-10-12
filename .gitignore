@@ -15,3 +15,7 @@ config/secrets.yaml
 
 #von mir
 wiki_full_example.yaml
+node-red/*
+docs/*
+*.md
+LICENSE

@@ -367,6 +367,54 @@ script:
             - delay: 200ms
             - component.update: battery_level
             - delay: 100ms
+            # --------------------------------------------------------
+            # Wait for Home Assistant sensor states
+            # --------------------------------------------------------
+            - wait_until:
+                condition:
+                  lambda: |-
+                    return
+                      // Current weather
+                      id(current_weather_condition).has_state() &&
+                      id(current_temperature).has_state() &&
+                      id(rain_today).has_state() &&
+                      id(rain_yesterday).has_state() &&
+
+                      // Sunrise, sunset and moon phase
+                      id(sunrise_time).has_state() &&
+                      id(sunset_time).has_state() &&
+                      id(moon_phase).has_state() &&
+
+                      // Hourly weather forecast
+                      id(forecast_hour_1).has_state() &&
+                      id(forecast_hour_2).has_state() &&
+                      id(forecast_hour_3).has_state() &&
+                      id(forecast_hour_4).has_state() &&
+
+                      // Daily weather forecast
+                      id(forecast_day_1).has_state() &&
+                      id(forecast_day_2).has_state() &&
+                      id(forecast_day_3).has_state() &&
+                      id(forecast_day_4).has_state() &&
+
+                      // Birthday calendar: weekdays
+                      id(calendar_a1).has_state() &&
+                      id(calendar_a2).has_state() &&
+                      id(calendar_a3).has_state() &&
+                      id(calendar_a4).has_state() &&
+
+                      // Birthday calendar: dates
+                      id(calendar_b1).has_state() &&
+                      id(calendar_b2).has_state() &&
+                      id(calendar_b3).has_state() &&
+                      id(calendar_b4).has_state() &&
+
+                      // Birthday calendar: names
+                      id(calendar_c1).has_state() &&
+                      id(calendar_c2).has_state() &&
+                      id(calendar_c3).has_state() &&
+                      id(calendar_c4).has_state();
+                timeout: 15s
             - component.update: epaper_display
             - delay: 10s
             - lambda: |-

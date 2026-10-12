@@ -173,7 +173,7 @@ display:
 
       // German weather description.
       it.printf(
-        133, 155,
+        133, 160,
         id(font_22),
         text_color,
         TextAlign::TOP_CENTER,
