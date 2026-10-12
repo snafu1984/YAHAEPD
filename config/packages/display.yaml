@@ -163,7 +163,7 @@ display:
 
       // Current weather icon.
       it.printf(
-        133, 100,
+        133, 110,
         id(sym_current_weather),
         text_color,
         TextAlign::CENTER,
@@ -214,11 +214,13 @@ display:
 
       // --------------------------------------------------------
       // SUNRISE AND SUNSET
+      // Zeiten kommen bereits lokal formatiert aus Home Assistant
+      // (CET/CEST), Format: HH:MM
       // --------------------------------------------------------
       const std::string sunrise = id(sunrise_time).state;
       const std::string sunset = id(sunset_time).state;
 
-      if (sunrise.length() >= 16 && sunset.length() >= 16) {
+      if (sunrise.length() == 5 && sunset.length() == 5) {
         // Sunrise: Symbol
         it.printf(
           50, 285,
@@ -235,7 +237,7 @@ display:
           text_color,
           TextAlign::TOP_LEFT,
           "%s",
-          sunrise.substr(11, 5).c_str()
+          sunrise.c_str()
         );
 
         // Sunset: Symbol
@@ -254,7 +256,7 @@ display:
           text_color,
           TextAlign::TOP_LEFT,
           "%s",
-          sunset.substr(11, 5).c_str()
+          sunset.c_str()
         );
       }
 
@@ -271,30 +273,30 @@ display:
       const int moon_y = 315;
 
       // Standardwerte: Neumond
-      const char *moon_icon = "\U000F0F65";
-      const char *moon_name = "Vollmond";
+      const char *moon_icon = "\U000F0F64";
+      const char *moon_name = "Neumond";
 
       // Mondphase anhand des Home-Assistant-Zustands bestimmen
       if (moon == "waxing_crescent") {
-        moon_icon = "\U000F0F62";
+        moon_icon = "\U000F0F67";
         moon_name = "Zunehmende Sichel";
       } else if (moon == "first_quarter") {
-        moon_icon = "\U000F0F63";
+        moon_icon = "\U000F0F61";
         moon_name = "Erstes Viertel";
       } else if (moon == "waxing_gibbous") {
-        moon_icon = "\U000F0F64";
+        moon_icon = "\U000F0F68";
         moon_name = "Zunehmender Mond";
       } else if (moon == "full_moon") {
-        moon_icon = "\U000F0F65";
+        moon_icon = "\U000F0F62";
         moon_name = "Vollmond";
       } else if (moon == "waning_gibbous") {
         moon_icon = "\U000F0F66";
         moon_name = "Abnehmender Mond";
       } else if (moon == "last_quarter") {
-        moon_icon = "\U000F0F67";
+        moon_icon = "\U000F0F63";
         moon_name = "Letztes Viertel";
       } else if (moon == "waning_crescent") {
-        moon_icon = "\U000F0F68";
+        moon_icon = "\U000F0F65";
         moon_name = "Abnehmende Sichel";
       }
 
@@ -310,7 +312,7 @@ display:
 
       // Deutsche Bezeichnung unterhalb des Symbols ausgeben
       it.printf(
-        moon_x, moon_y + 95,
+        moon_x, moon_y + 100,
         id(font_22),
         text_color,
         TextAlign::TOP_CENTER,
@@ -370,7 +372,7 @@ display:
 
               // Niederschlag: Tropfen | Wahrscheinlichkeit / Menge
       it.printf(
-        cx - 48, 113, id(sym_weather_small), text_color,
+        cx - 38, 113, id(sym_weather_small), text_color,
         TextAlign::TOP_CENTER, "\U000F058C"
       );
 
@@ -430,10 +432,10 @@ display:
 
         // Niederschlag: Tropfen | Wahrscheinlichkeit / Menge
         it.printf(
-          cx - 48, 276, id(sym_weather_small), text_color,
+          cx - 38, 276, id(sym_weather_small), text_color,
           TextAlign::TOP_CENTER, "\U000F058C"
         );
-
+        // war cx - 48
         it.printf(
           cx + 12, 276, id(font_18), text_color,
           TextAlign::TOP_CENTER, "%.0f%% / %.1f",

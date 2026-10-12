@@ -25,8 +25,7 @@ text_sensor:
   # Attribut: next_rising
   # --------------------------------------------------------
   - platform: homeassistant
-    entity_id: sun.sun
-    attribute: next_rising
+    entity_id: sensor.display_sunrise
     id: sunrise_time
     internal: true
 
@@ -37,8 +36,7 @@ text_sensor:
   # Attribut: next_setting
   # --------------------------------------------------------
   - platform: homeassistant
-    entity_id: sun.sun
-    attribute: next_setting
+    entity_id: sensor.display_sunset
     id: sunset_time
     internal: true
 

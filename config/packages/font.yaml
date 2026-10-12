@@ -9,17 +9,10 @@ font:
 # Used in forecast hourly/daily, birthday calender
 # ============================================================
 
-  - file: "../fonts/Gotham-Rounded-Bold.ttf"
+  - file: ${font_file}
     id: font_18
     size: 18
-    glyphs:
-      - "abcdefghijklmnopqrstuvwxyz"
-      - "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      - "äöüÄÖÜß"
-      - "0123456789"
-      - " "
-      - "-"
-      - ",.;:%°/"
+    glyphs: !include "../../fonts/glyphs.yaml"
 
 # ============================================================
 # FONT 22
@@ -27,31 +20,17 @@ font:
 #  Sunrise / Sunset and moon phase name
 # ============================================================
 
-  - file: "../fonts/Gotham-Rounded-Bold.ttf"
+  - file: ${font_file}
     id: font_22
     size: 22
-    glyphs:
-      - "abcdefghijklmnopqrstuvwxyz"
-      - "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      - "äöüÄÖÜß"
-      - "0123456789"
-      - " "
-      - "-"
-      - ",.;:%°/"
+    glyphs: !include "../../fonts/glyphs.yaml"
 
 # ============================================================
 # FONT 42
 # Used in current temperature and curren date
 # ============================================================
 
-  - file: "../fonts/Gotham-Rounded-Bold.ttf"
+  - file: ${font_file}
     id: font_42
     size: 42
-    glyphs:
-      - "abcdefghijklmnopqrstuvwxyz"
-      - "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      - "äöüÄÖÜß"
-      - "0123456789"
-      - " "
-      - "-"
-      - ",.;:%°/"
+    glyphs: !include "../../fonts/glyphs.yaml"

@@ -8,7 +8,7 @@ font:
   # Waterdrop forecast
   # ------------------------------------------------------------
 
-  - file: "../fonts/materialdesignicons-webfont.ttf"
+  - file: ${sym_file}
     id: sym_weather_small
     size: 18
     glyphs:
@@ -18,7 +18,7 @@ font:
   # Sunrise / Sunset
   # Kleine Symbole für Sonnenauf- und Sonnenuntergang
   # --------------------------------------------------------
-  - file: "../fonts/materialdesignicons-webfont.ttf"
+  - file: ${sym_file}
     id: sym_sun
     size: 22
     glyphs:
@@ -29,7 +29,7 @@ font:
   # Forecast weather icon
   # ------------------------------------------------------------
 
-  - file: "../fonts/materialdesignicons-webfont.ttf"
+  - file: ${sym_file}
     id: sym_weather
     size: 60
     glyphs:
@@ -57,7 +57,7 @@ font:
   # Icon (MDI).
   # The glyphs are defined in the existing font configuration.
   # ------------------------------------------------------------
-  - file: "../fonts/materialdesignicons-webfont.ttf"
+  - file: ${sym_file}
     id: sym_current_weather
     size: 100
     glyphs:
@@ -80,15 +80,15 @@ font:
   # Moon phase icons
   # ------------------------------------------------------------
 
-  - file: "../fonts/materialdesignicons-webfont.ttf"
+  - file: ${sym_file}
     id: sym_moon
     size: 100
     glyphs:
-      - "\U000F0F61" # moon-new
-      - "\U000F0F62" # moon-waxing-crescent
-      - "\U000F0F63" # moon-first-quarter
-      - "\U000F0F64" # moon-waxing-gibbous
-      - "\U000F0F65" # moon-full
+      - "\U000F0F64" # moon-new
+      - "\U000F0F67" # moon-waxing-crescent
+      - "\U000F0F61" # moon-first-quarter
+      - "\U000F0F68" # moon-waxing-gibbous
+      - "\U000F0F62" # moon-full
       - "\U000F0F66" # moon-waning-gibbous
-      - "\U000F0F67" # moon-last-quarter
-      - "\U000F0F68" # moon-waning-crescent
+      - "\U000F0F63" # moon-last-quarter
+      - "\U000F0F65" # moon-waning-crescent

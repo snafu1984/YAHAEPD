@@ -4,6 +4,9 @@
 substitutions:
   device_name: reterminal-e1001
   friendly_name: "reTerminal E1001"
+  font_file: "../fonts/Gotham-Rounded-Bold.ttf"
+  sym_file: "../fonts/materialdesignicons-webfont.ttf"
+
 
 # ============================================================
 # ESPHOME
@@ -365,7 +368,7 @@ script:
             - component.update: battery_level
             - delay: 100ms
             - component.update: epaper_display
-            - delay: 1s
+            - delay: 10s
             - lambda: |-
                 id(key_update_wakeup) = false;
 
