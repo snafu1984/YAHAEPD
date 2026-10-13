@@ -85,6 +85,12 @@ Home Assistant prepares data in the required format before ESPHome receives it. 
 
 **Important:** Do not commit Wi-Fi passwords, API encryption keys, private calendar URLs, or other credentials to a public repository. Store sensitive values in an appropriate secrets configuration.
 
+### Secrets Configuration
+
+Copy `config/secrets.yaml.example` to `config/secrets.yaml` and replace the placeholder values with your own credentials.
+
+The `secrets.yaml` file contains sensitive information and must not be committed to the repository. The `.gitignore` file excludes it from version control.
+
 ### Detailed Documentation
 
 - [Home Assistant Configuration](docs/home-assistant.md) — Required integrations, template sensors, weather forecasts, sunrise and sunset, moonrise and moonset, precipitation, and display entities.

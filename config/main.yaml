@@ -75,7 +75,7 @@ logger:
 # ============================================================
 api:
   encryption:
-    key: !secret api_encryption_key_3
+    key: !secret api_encryption_key
 
   # ----------------------------------------------------------
   # Home Assistant connection
