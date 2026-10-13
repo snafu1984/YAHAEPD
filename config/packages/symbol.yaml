@@ -16,7 +16,6 @@ font:
 
   # --------------------------------------------------------
   # Sunrise / Sunset
-  # Kleine Symbole für Sonnenauf- und Sonnenuntergang
   # --------------------------------------------------------
   - file: ${sym_file}
     id: sym_sun
@@ -24,6 +23,17 @@ font:
     glyphs:
       - "\U000F059C"  # weather-sunset-up
       - "\U000F059B"  # weather-sunset-down
+
+
+  # --------------------------------------------------------
+  # Moonrise / Moonset
+  # --------------------------------------------------------
+  - file: ${sym_file}
+    id: sym_moon_events
+    size: 22
+    glyphs:
+      - "\U000F1D17" # weather-moonset-up
+      - "\U000F1D16" # weather-moonset-down
 
   # ------------------------------------------------------------
   # Forecast weather icon

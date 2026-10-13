@@ -202,7 +202,7 @@ display:
           !isnan(id(rain_yesterday).state)) {
 
       it.printf(
-        133, 255,
+        133, 250,
         id(font_22),
         text_color,
         TextAlign::TOP_CENTER,
@@ -214,7 +214,7 @@ display:
 
       // --------------------------------------------------------
       // SUNRISE AND SUNSET
-      // Zeiten kommen bereits lokal formatiert aus Home Assistant
+      // Times are already formatted in local time by Home Assistant.
       // (CET/CEST), Format: HH:MM
       // --------------------------------------------------------
       const std::string sunrise = id(sunrise_time).state;
@@ -223,7 +223,7 @@ display:
       if (sunrise.length() == 5 && sunset.length() == 5) {
         // Sunrise: Symbol
         it.printf(
-          50, 285,
+          50, 280,
           id(sym_sun),
           text_color,
           TextAlign::TOP_RIGHT,
@@ -232,7 +232,7 @@ display:
 
         // Sunrise: Time
         it.printf(
-          55, 285,
+          55, 280,
           id(font_22),
           text_color,
           TextAlign::TOP_LEFT,
@@ -242,7 +242,7 @@ display:
 
         // Sunset: Symbol
         it.printf(
-          160, 285,
+          160, 280,
           id(sym_sun),
           text_color,
           TextAlign::TOP_RIGHT,
@@ -251,7 +251,7 @@ display:
 
         // Sunset: Time
         it.printf(
-          165, 285,
+          165, 280,
           id(font_22),
           text_color,
           TextAlign::TOP_LEFT,
@@ -262,21 +262,25 @@ display:
 
       // --------------------------------------------------------
       // MOON PHASE
-      // Aktuelle Mondphase mit Symbol und deutscher Bezeichnung
+      // Current moon phase with symbol and German description
       // --------------------------------------------------------
 
-      // Aktuelle Mondphase aus Home Assistant auslesen
+      // Current moon phase reading from Home Assistant
       const std::string moon = id(moon_phase).state;
 
-      // Position der Mondphasenanzeige
-      const int moon_x = 133;
-      const int moon_y = 315;
+      // Moonrise and moonset times from Home Assistant
+      const std::string moonrise = id(moonrise_time).state;
+      const std::string moonset = id(moonset_time).state;
 
-      // Standardwerte: Neumond
+      // Position of the moon display
+      const int moon_x = 133;
+      const int moon_y = 310;
+
+      // Initial value: new moon
       const char *moon_icon = "\U000F0F64";
       const char *moon_name = "Neumond";
 
-      // Mondphase anhand des Home-Assistant-Zustands bestimmen
+      // Determine the moon phase based on the Home Assistant state
       if (moon == "waxing_crescent") {
         moon_icon = "\U000F0F67";
         moon_name = "Zunehmende Sichel";
@@ -300,7 +304,7 @@ display:
         moon_name = "Abnehmende Sichel";
       }
 
-      // Mondphasensymbol mittig ausgeben
+      // Center the moon phase symbol
       it.printf(
         moon_x, moon_y,
         id(sym_moon),
@@ -310,7 +314,7 @@ display:
         moon_icon
       );
 
-      // Deutsche Bezeichnung unterhalb des Symbols ausgeben
+      // Display the German description below the symbol
       it.printf(
         moon_x, moon_y + 100,
         id(font_22),
@@ -318,6 +322,41 @@ display:
         TextAlign::TOP_CENTER,
         "%s",
         moon_name
+      );
+
+      // Display moonrise and moonset symbols with times
+      it.printf(
+        50, moon_y + 130,
+        id(sym_moon_events),
+        text_color,
+        TextAlign::TOP_RIGHT,
+        "\U000F1D17"
+      );
+
+      it.printf(
+        55, moon_y + 132,
+        id(font_22),
+        text_color,
+        TextAlign::TOP_LEFT,
+        "%s",
+        moonrise.empty() ? "--:--" : moonrise.c_str()
+      );
+
+      it.printf(
+        160, moon_y + 130,
+        id(sym_moon_events),
+        text_color,
+        TextAlign::TOP_RIGHT,
+        "\U000F1D16"
+      );
+
+      it.printf(
+        165, moon_y + 132,
+        id(font_22),
+        text_color,
+        TextAlign::TOP_LEFT,
+        "%s",
+        moonset.empty() ? "--:--" : moonset.c_str()
       );
 
       // --------------------------------------------------------
@@ -370,7 +409,7 @@ display:
           TextAlign::TOP_CENTER, "%.1f °C", temp
         );
 
-              // Niederschlag: Tropfen | Wahrscheinlichkeit / Menge
+              // Precipitation: Amount | Probability / precipitation
       it.printf(
         cx - 38, 113, id(sym_weather_small), text_color,
         TextAlign::TOP_CENTER, "\U000F058C"
@@ -430,7 +469,7 @@ display:
           TextAlign::TOP_CENTER, "%.1f / %.1f °C", high, low
         );
 
-        // Niederschlag: Tropfen | Wahrscheinlichkeit / Menge
+        // Precipitation: Amount | Probability / precipitation
         it.printf(
           cx - 38, 276, id(sym_weather_small), text_color,
           TextAlign::TOP_CENTER, "\U000F058C"

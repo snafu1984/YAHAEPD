@@ -18,11 +18,33 @@ text_sensor:
     id: moon_phase
     internal: true
 
+
+  # --------------------------------------------------------
+  # MOONRISE
+  # Next moonrise from Home Assistant
+  # Source: sensor.display_moonrise
+  # --------------------------------------------------------
+  - platform: homeassistant
+    id: moonrise_time
+    entity_id: sensor.display_moonrise
+    internal: true
+
+  # --------------------------------------------------------
+  # MOONSET
+  # Next moonset from Home Assistant
+  # Source: sensor.display_moonset
+  # --------------------------------------------------------
+  - platform: homeassistant
+    id: moonset_time
+    entity_id: sensor.display_moonset
+    internal: true
+
+
   # --------------------------------------------------------
   # SUNRISE
-  # Nächster Sonnenaufgang aus Home Assistant
-  # Quelle: sun.sun
-  # Attribut: next_rising
+  # Next sunrise from Home Assistant
+  # Source: sun.sun
+  # Attribute: next_rising
   # --------------------------------------------------------
   - platform: homeassistant
     entity_id: sensor.display_sunrise
@@ -31,9 +53,9 @@ text_sensor:
 
   # --------------------------------------------------------
   # SUNSET
-  # Nächster Sonnenuntergang aus Home Assistant
-  # Quelle: sun.sun
-  # Attribut: next_setting
+  # Next sunset from Home Assistant
+  # Source: sun.sun
+  # Attribute: next_setting
   # --------------------------------------------------------
   - platform: homeassistant
     entity_id: sensor.display_sunset

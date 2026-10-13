@@ -362,7 +362,6 @@ script:
                 level: INFO
                 format: "Skipping display refresh: close to scheduled wake-up or night mode"
           else:
-            # Hier deinen bisherigen Refresh-Block unverändert beibehalten.
             - component.update: battery_voltage
             - delay: 200ms
             - component.update: battery_level
