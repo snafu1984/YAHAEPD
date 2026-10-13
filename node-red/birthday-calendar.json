@@ -1,0 +1,1563 @@
+[
+    {
+        "id": "7734f6834425a63c",
+        "type": "inject",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "10800",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 90,
+        "y": 540,
+        "wires": [
+            [
+                "b1dbea6f1006635f",
+                "9893352801cbbf24"
+            ]
+        ]
+    },
+    {
+        "id": "b1dbea6f1006635f",
+        "type": "ical-upcoming",
+        "z": "8dff866cf5fdd88d",
+        "confignode": "5e912e5be2d08590",
+        "timeout": "1",
+        "timeoutUnits": "hours",
+        "cron": "",
+        "name": "Geburtstage",
+        "offsettype": "",
+        "offset": "",
+        "offsetUnitstype": "",
+        "offsetUnits": "",
+        "eventtypes": "events",
+        "eventtypestype": "eventtypes",
+        "calendar": "",
+        "calendartype": "str",
+        "triggertype": "trigger",
+        "trigger": "always",
+        "timezone": "Europe/Berlin",
+        "timezonetype": "timezone",
+        "dateformat": "{\"timeStyle\":\"short\",\"dateStyle\":\"short\"}",
+        "dateformattype": "json",
+        "language": "de",
+        "languagetype": "language",
+        "filterProperty": "summary",
+        "filterPropertytype": "filterProperty",
+        "filterOperator": "between",
+        "filterOperatortype": "filterOperator",
+        "filtertype": "str",
+        "filter2type": "str",
+        "filter2": "",
+        "filter": "",
+        "checkall": false,
+        "endpreview": "",
+        "endpreviewUnits": "",
+        "previewtype": "num",
+        "preview": "90",
+        "previewUnitstype": "previewUnits",
+        "previewUnits": "days",
+        "pastviewtype": "num",
+        "pastview": "1",
+        "pastviewUnits": "days",
+        "pastviewUnitstype": "pastviewUnits",
+        "x": 330,
+        "y": 540,
+        "wires": [
+            [
+                "88758a64623e9a23",
+                "56fc1a6f72ee152c",
+                "52feea315ee26b9e",
+                "b4c5f6a9ee2fcff3",
+                "f0dd0bab2ea558cc",
+                "cb14bcc315fbf5c0",
+                "441a33ee63b2e59e",
+                "45c105b6744ba72b",
+                "774c2108f0675cac",
+                "b023990858a5d822",
+                "e6509a3965ec4c7d",
+                "d38fd2f061969a7f",
+                "14bdce13c316840e",
+                "1e782aee94c4c29b",
+                "fd1a06c3e4978ff2",
+                "914b106ecc8fb6d2",
+                "4c7c8401e7d33fb3",
+                "004f054a66d7c429",
+                "45f3198bbe7e8cd3",
+                "2280ce444201569b"
+            ]
+        ]
+    },
+    {
+        "id": "9893352801cbbf24",
+        "type": "link out",
+        "z": "8dff866cf5fdd88d",
+        "name": "HA_Jahr_out",
+        "mode": "link",
+        "links": [
+            "ef23c9e11fc1065e"
+        ],
+        "x": 285,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "88758a64623e9a23",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Wochentag",
+        "func": "let n = msg.total;\nvar i=0;\nif(n>i) \n{\n    var dow=msg.payload[i].eventStart;\n    dow = new Date(dow).getDay();\n    switch (dow)\n    {\n        case 0:\n        dow = 'So';\n        break;\n        \n        case 1:\n        dow = 'Mo';\n        break;\n        \n        case 2:\n        dow = 'Di';\n        break;\n        \n        case 3:\n        dow = 'Mi';\n        break;\n        \n        case 4:\n        dow = 'Do';\n        break;\n        \n        case 5:\n        dow = 'Fr';\n        break;\n        \n        case 6:\n        dow = 'Sa';\n        break;\n        \n        default:\n        dow = '--';\n        break;\n    }\n\nmsg.payload = dow;}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 120,
+        "wires": [
+            [
+                "249486eac2868e75"
+            ]
+        ]
+    },
+    {
+        "id": "56fc1a6f72ee152c",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Datum",
+        "func": "let n = msg.total;\nvar i=0;\nif(n>i) \n{\n    var calDay   = msg.payload[0].date.substring(0,2);\n    var calMonth = msg.payload[0].date.substring(3,5);\n    msg.payload  = calDay + \".\" + calMonth + \".\" ;\n}\n\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 160,
+        "wires": [
+            [
+                "ebeacd1db22d3064"
+            ]
+        ]
+    },
+    {
+        "id": "52feea315ee26b9e",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Ereignis",
+        "func": "let n = msg.total;\nvar i=0;\nif(n>i) \n{\n    var event = msg.payload[i].summary;\n    msg.payload  = event;\n}\nelse\n{\n    msg.payload = \"keine Daten\";\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 200,
+        "wires": [
+            [
+                "2651a86ab3458841"
+            ]
+        ]
+    },
+    {
+        "id": "b4c5f6a9ee2fcff3",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Wochentag",
+        "func": "let n = msg.total;\nvar i=1;\nif(n>i) \n{\n    var dow=msg.payload[i].eventStart;\n    dow = new Date(dow).getDay();\n    switch (dow)\n    {\n        case 0:\n        dow = 'So';\n        break;\n        \n        case 1:\n        dow = 'Mo';\n        break;\n        \n        case 2:\n        dow = 'Di';\n        break;\n        \n        case 3:\n        dow = 'Mi';\n        break;\n        \n        case 4:\n        dow = 'Do';\n        break;\n        \n        case 5:\n        dow = 'Fr';\n        break;\n        \n        case 6:\n        dow = 'Sa';\n        break;\n        \n        default:\n        dow = '--';\n        break;\n    }\n\nmsg.payload = dow;}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 300,
+        "wires": [
+            [
+                "cffd8b20db700cc4"
+            ]
+        ]
+    },
+    {
+        "id": "f0dd0bab2ea558cc",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Datum",
+        "func": "let n = msg.total;\nvar i=1;\nif (n > i) {\n    var calDay = msg.payload[i].date.substring(0, 2);\n    var calMonth = msg.payload[i].date.substring(3, 5);\n    msg.payload = calDay + \".\" + calMonth + \".\";\n}\n\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 340,
+        "wires": [
+            [
+                "ec2a84c076e03570"
+            ]
+        ]
+    },
+    {
+        "id": "cb14bcc315fbf5c0",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Ereignis",
+        "func": "let n = msg.total;\nvar i=1;\nif(n>i) \n{\n    var event = msg.payload[i].summary;\n    msg.payload  = event;\n    \n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 380,
+        "wires": [
+            [
+                "ab1d6e2f4505361c"
+            ]
+        ]
+    },
+    {
+        "id": "441a33ee63b2e59e",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Wochentag",
+        "func": "let n = msg.total;\nvar i = 2;\nif (n > i) {\n    var dow = msg.payload[i].eventStart;\n    dow = new Date(dow).getDay();\n    switch (dow) {\n        case 0:\n            dow = 'So';\n            break;\n\n        case 1:\n            dow = 'Mo';\n            break;\n\n        case 2:\n            dow = 'Di';\n            break;\n\n        case 3:\n            dow = 'Mi';\n            break;\n\n        case 4:\n            dow = 'Do';\n            break;\n\n        case 5:\n            dow = 'Fr';\n            break;\n\n        case 6:\n            dow = 'Sa';\n            break;\n\n        default:\n            dow = '--';\n            break;\n    }\n\n    msg.payload = dow;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 480,
+        "wires": [
+            [
+                "558367f237bbdf43"
+            ]
+        ]
+    },
+    {
+        "id": "45c105b6744ba72b",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Datum",
+        "func": "let n = msg.total;\nvar i=2;\nif (n > i) {\n    var calDay = msg.payload[i].date.substring(0, 2);\n    var calMonth = msg.payload[i].date.substring(3, 5);\n    msg.payload = calDay + \".\" + calMonth + \".\";\n}\n\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 520,
+        "wires": [
+            [
+                "7d02e5bc87ae0bc6"
+            ]
+        ]
+    },
+    {
+        "id": "774c2108f0675cac",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Ereignis",
+        "func": "let n = msg.total;\nvar i=2;\nif(n>i) \n{\n    var event = msg.payload[i].summary;\n    msg.payload  = event;\n    \n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 560,
+        "wires": [
+            [
+                "2600ba738f35baa6"
+            ]
+        ]
+    },
+    {
+        "id": "b023990858a5d822",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Wochentag",
+        "func": "let n = msg.total;\nvar i = 3;\nif (n > i) {\n    var dow = msg.payload[i].eventStart;\n    dow = new Date(dow).getDay();\n    switch (dow) {\n        case 0:\n            dow = 'So';\n            break;\n\n        case 1:\n            dow = 'Mo';\n            break;\n\n        case 2:\n            dow = 'Di';\n            break;\n\n        case 3:\n            dow = 'Mi';\n            break;\n\n        case 4:\n            dow = 'Do';\n            break;\n\n        case 5:\n            dow = 'Fr';\n            break;\n\n        case 6:\n            dow = 'Sa';\n            break;\n\n        default:\n            dow = '--';\n            break;\n    }\n\n    msg.payload = dow;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 660,
+        "wires": [
+            [
+                "e6ecb6dcc19a1ae9"
+            ]
+        ]
+    },
+    {
+        "id": "e6509a3965ec4c7d",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Datum",
+        "func": "let n = msg.total;\nvar i=3;\nif (n > i) {\n    var calDay = msg.payload[i].date.substring(0, 2);\n    var calMonth = msg.payload[i].date.substring(3, 5);\n    msg.payload = calDay + \".\" + calMonth + \".\";\n}\n\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 700,
+        "wires": [
+            [
+                "4b1082f5fbe6976b"
+            ]
+        ]
+    },
+    {
+        "id": "d38fd2f061969a7f",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Ereignis",
+        "func": "let n = msg.total;\nvar i=3;\nif(n>i) \n{\n    var event = msg.payload[i].summary;\n    msg.payload  = event;\n    \n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 740,
+        "wires": [
+            [
+                "3642a22c9e73626f"
+            ]
+        ]
+    },
+    {
+        "id": "14bdce13c316840e",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "func": "let n = msg.total;\nvar i=0;\nif(n>i) \n{\n  var event = msg.payload[i].description;\n  msg.payload  = event;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 240,
+        "wires": [
+            [
+                "2df6bdbdabdf55e1"
+            ]
+        ]
+    },
+    {
+        "id": "1e782aee94c4c29b",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "func": "let n = msg.total;\nvar i=1;\nif(n>i) \n{\n  var event = msg.payload[i].description;\n  msg.payload  = event;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 420,
+        "wires": [
+            [
+                "649b4bdcd3c8a870"
+            ]
+        ]
+    },
+    {
+        "id": "fd1a06c3e4978ff2",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "func": "let n = msg.total;\nvar i=2;\nif(n>i) \n{\n  var event = msg.payload[i].description;\n  msg.payload  = event;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 600,
+        "wires": [
+            [
+                "5aaeb38b56424858"
+            ]
+        ]
+    },
+    {
+        "id": "914b106ecc8fb6d2",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "func": "let n = msg.total;\nvar i=3;\nif(n>i) \n{\n  var event = msg.payload[i].description;\n  msg.payload  = event;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 780,
+        "wires": [
+            [
+                "36113f1a9017a93b"
+            ]
+        ]
+    },
+    {
+        "id": "4c7c8401e7d33fb3",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Wochentag",
+        "func": "let n = msg.total;\nvar i = 4;\nif (n > i) {\n    var dow = msg.payload[i].eventStart;\n    dow = new Date(dow).getDay();\n    switch (dow) {\n        case 0:\n            dow = 'So';\n            break;\n\n        case 1:\n            dow = 'Mo';\n            break;\n\n        case 2:\n            dow = 'Di';\n            break;\n\n        case 3:\n            dow = 'Mi';\n            break;\n\n        case 4:\n            dow = 'Do';\n            break;\n\n        case 5:\n            dow = 'Fr';\n            break;\n\n        case 6:\n            dow = 'Sa';\n            break;\n\n        default:\n            dow = '--';\n            break;\n    }\n\n    msg.payload = dow;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 840,
+        "wires": [
+            [
+                "7a829d6742075e09"
+            ]
+        ]
+    },
+    {
+        "id": "004f054a66d7c429",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Datum",
+        "func": "let n = msg.total;\nvar i=4;\nif (n > i) {\n    var calDay = msg.payload[i].date.substring(0, 2);\n    var calMonth = msg.payload[i].date.substring(3, 5);\n    msg.payload = calDay + \".\" + calMonth + \".\";\n}\n\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 880,
+        "wires": [
+            [
+                "dd45d1e0051a4315"
+            ]
+        ]
+    },
+    {
+        "id": "45f3198bbe7e8cd3",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Ereignis",
+        "func": "let n = msg.total;\nvar i=4;\nif(n>i) \n{\n    var event = msg.payload[i].summary;\n    msg.payload  = event;\n    \n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 920,
+        "wires": [
+            [
+                "d1c782450bb25fe9"
+            ]
+        ]
+    },
+    {
+        "id": "2280ce444201569b",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "func": "let n = msg.total;\nvar i=4;\nif(n>i) \n{\n  var event = msg.payload[i].description;\n  msg.payload  = event;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 960,
+        "wires": [
+            [
+                "6acb3e4db5f32589"
+            ]
+        ]
+    },
+    {
+        "id": "249486eac2868e75",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Wochentag/A1",
+        "topic": "Display/A1",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 780,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "ebeacd1db22d3064",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Datum/B1",
+        "topic": "Display/B1",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 770,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "2651a86ab3458841",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Ereignis/C1",
+        "topic": "Display/C1",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 770,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "cffd8b20db700cc4",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Wochentag/A2",
+        "topic": "Display/A2",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 780,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "ec2a84c076e03570",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Datum/B2",
+        "topic": "Display/B2",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 770,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "ab1d6e2f4505361c",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Ereignis/C2",
+        "topic": "Display/C2",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 770,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "558367f237bbdf43",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Wochentag/A3",
+        "topic": "Display/A3",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 780,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "7d02e5bc87ae0bc6",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Datum/B3",
+        "topic": "Display/B3",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 770,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "2600ba738f35baa6",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Ereignis/C3",
+        "topic": "Display/C3",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 770,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "e6ecb6dcc19a1ae9",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Wochentag/A4",
+        "topic": "Display/A4",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 780,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "4b1082f5fbe6976b",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Datum/B4",
+        "topic": "Display/B4",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 770,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "3642a22c9e73626f",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Ereignis/C4",
+        "topic": "Display/C4",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 770,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "2df6bdbdabdf55e1",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Geb_Jahr",
+        "func": "msg.topic=\"T1\";\nmsg.payload = Number(msg.payload)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 240,
+        "wires": [
+            [
+                "7864d034dc197da9"
+            ]
+        ]
+    },
+    {
+        "id": "649b4bdcd3c8a870",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Geb_Jahr",
+        "func": "msg.topic=\"T1\";\nmsg.payload = Number(msg.payload)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 420,
+        "wires": [
+            [
+                "068ba04f8af490ea"
+            ]
+        ]
+    },
+    {
+        "id": "5aaeb38b56424858",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Geb_Jahr",
+        "func": "msg.topic=\"T1\";\nmsg.payload = Number(msg.payload)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 600,
+        "wires": [
+            [
+                "c23261c06c3d2993"
+            ]
+        ]
+    },
+    {
+        "id": "36113f1a9017a93b",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Geb_Jahr",
+        "func": "msg.topic=\"T1\";\nmsg.payload = Number(msg.payload)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 780,
+        "wires": [
+            [
+                "b1a2113f4c1b4ec3"
+            ]
+        ]
+    },
+    {
+        "id": "7a829d6742075e09",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Wochentag/A5",
+        "topic": "Display/A5",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 780,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "dd45d1e0051a4315",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Datum/B5",
+        "topic": "Display/B5",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 770,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "d1c782450bb25fe9",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Ereignis/C5",
+        "topic": "Display/C5",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 770,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "6acb3e4db5f32589",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Geb_Jahr",
+        "func": "msg.topic=\"T1\";\nmsg.payload = Number(msg.payload)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 960,
+        "wires": [
+            [
+                "5cacd78087a4ff3d"
+            ]
+        ]
+    },
+    {
+        "id": "7864d034dc197da9",
+        "type": "join",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1070,
+        "y": 240,
+        "wires": [
+            [
+                "d9e6f4a4fcfa4375"
+            ]
+        ]
+    },
+    {
+        "id": "068ba04f8af490ea",
+        "type": "join",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1070,
+        "y": 420,
+        "wires": [
+            [
+                "e138d311b07409f6"
+            ]
+        ]
+    },
+    {
+        "id": "c23261c06c3d2993",
+        "type": "join",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1070,
+        "y": 600,
+        "wires": [
+            [
+                "bccf0189c70c64ed"
+            ]
+        ]
+    },
+    {
+        "id": "b1a2113f4c1b4ec3",
+        "type": "join",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1070,
+        "y": 780,
+        "wires": [
+            [
+                "218d5f396a3aa7d4"
+            ]
+        ]
+    },
+    {
+        "id": "5cacd78087a4ff3d",
+        "type": "join",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": true,
+        "accumulate": true,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1070,
+        "y": 960,
+        "wires": [
+            [
+                "08a2facbc1c76ce9"
+            ]
+        ]
+    },
+    {
+        "id": "1cf15ccc7336fa8e",
+        "type": "link in",
+        "z": "8dff866cf5fdd88d",
+        "name": "Jahr_akt_1",
+        "links": [
+            "0bc4a254ce2533bc",
+            "6b52d8a72735611f"
+        ],
+        "x": 915,
+        "y": 200,
+        "wires": [
+            [
+                "7864d034dc197da9"
+            ]
+        ]
+    },
+    {
+        "id": "d9e6f4a4fcfa4375",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Alter_brerrechnen",
+        "func": "if(msg.payload == \"NaN\"){\nmsg.payload = \"\";\n}\nelse{\nvar numberone = msg.payload.T1;\nvar numbertwo = msg.payload.T2;\n\nmsg.payload = (numbertwo - numberone);\n}\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1250,
+        "y": 240,
+        "wires": [
+            [
+                "7cde2d2285d786d9"
+            ]
+        ]
+    },
+    {
+        "id": "d5505d71d768e1d8",
+        "type": "link in",
+        "z": "8dff866cf5fdd88d",
+        "name": "Jahr_akt_1",
+        "links": [
+            "0bc4a254ce2533bc",
+            "6b52d8a72735611f"
+        ],
+        "x": 915,
+        "y": 380,
+        "wires": [
+            [
+                "068ba04f8af490ea"
+            ]
+        ]
+    },
+    {
+        "id": "e138d311b07409f6",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Alter_brerrechnen",
+        "func": "if(msg.payload == \"NaN\"){\nmsg.payload = \"\";\n}\nelse{\nvar numberone = msg.payload.T1;\nvar numbertwo = msg.payload.T2;\n\nmsg.payload = (numbertwo - numberone);\n}\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1250,
+        "y": 420,
+        "wires": [
+            [
+                "cc7175aa01cf1493"
+            ]
+        ]
+    },
+    {
+        "id": "bc114b3c3aa0ff77",
+        "type": "link in",
+        "z": "8dff866cf5fdd88d",
+        "name": "Jahr_akt_1",
+        "links": [
+            "0bc4a254ce2533bc",
+            "6b52d8a72735611f"
+        ],
+        "x": 915,
+        "y": 560,
+        "wires": [
+            [
+                "c23261c06c3d2993"
+            ]
+        ]
+    },
+    {
+        "id": "bccf0189c70c64ed",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Alter_brerrechnen",
+        "func": "if(msg.payload == \"NaN\"){\nmsg.payload = \"\";\n}\nelse{\nvar numberone = msg.payload.T1;\nvar numbertwo = msg.payload.T2;\n\nmsg.payload = (numbertwo - numberone);\n}\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1250,
+        "y": 600,
+        "wires": [
+            [
+                "0aaf05fa5a0514a5"
+            ]
+        ]
+    },
+    {
+        "id": "400ce07e15564b5e",
+        "type": "link in",
+        "z": "8dff866cf5fdd88d",
+        "name": "Jahr_akt_1",
+        "links": [
+            "0bc4a254ce2533bc",
+            "6b52d8a72735611f"
+        ],
+        "x": 915,
+        "y": 740,
+        "wires": [
+            [
+                "b1a2113f4c1b4ec3"
+            ]
+        ]
+    },
+    {
+        "id": "218d5f396a3aa7d4",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Alter_brerrechnen",
+        "func": "if(msg.payload == \"NaN\"){\nmsg.payload = \"\";\n}\nelse{\nvar numberone = msg.payload.T1;\nvar numbertwo = msg.payload.T2;\n\nmsg.payload = (numbertwo - numberone);\n}\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1250,
+        "y": 780,
+        "wires": [
+            [
+                "e02905f4eecf4882"
+            ]
+        ]
+    },
+    {
+        "id": "b94e63b19899e06d",
+        "type": "link in",
+        "z": "8dff866cf5fdd88d",
+        "name": "Jahr_akt_1",
+        "links": [
+            "0bc4a254ce2533bc",
+            "6b52d8a72735611f"
+        ],
+        "x": 915,
+        "y": 920,
+        "wires": [
+            [
+                "5cacd78087a4ff3d"
+            ]
+        ]
+    },
+    {
+        "id": "08a2facbc1c76ce9",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Alter_brerrechnen",
+        "func": "if(msg.payload == \"NaN\"){\nmsg.payload = \"\";\n}\nelse{\nvar numberone = msg.payload.T1;\nvar numbertwo = msg.payload.T2;\n\nmsg.payload = (numbertwo - numberone);\n}\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1250,
+        "y": 960,
+        "wires": [
+            [
+                "74d30b2b6e243b89"
+            ]
+        ]
+    },
+    {
+        "id": "7cde2d2285d786d9",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "filter_NaN",
+        "func": "if ( isNaN(msg.payload)){\n    msg.payload = \"\";\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1440,
+        "y": 240,
+        "wires": [
+            [
+                "3da9a5616b33b5b2"
+            ]
+        ]
+    },
+    {
+        "id": "cc7175aa01cf1493",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "filter_NaN",
+        "func": "if ( isNaN(msg.payload)){\n    msg.payload = \"\";\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1440,
+        "y": 420,
+        "wires": [
+            [
+                "1e3663dad8af61d5"
+            ]
+        ]
+    },
+    {
+        "id": "0aaf05fa5a0514a5",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "filter_NaN",
+        "func": "if ( isNaN(msg.payload)){\n    msg.payload = \"\";\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1440,
+        "y": 600,
+        "wires": [
+            [
+                "bdf3fd1d5c635a62"
+            ]
+        ]
+    },
+    {
+        "id": "e02905f4eecf4882",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "filter_NaN",
+        "func": "if ( isNaN(msg.payload)){\n    msg.payload = \"\";\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1440,
+        "y": 780,
+        "wires": [
+            [
+                "56a46aa3c15e0818"
+            ]
+        ]
+    },
+    {
+        "id": "74d30b2b6e243b89",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "filter_NaN",
+        "func": "if ( isNaN(msg.payload)){\n    msg.payload = \"\";\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1440,
+        "y": 960,
+        "wires": [
+            [
+                "a32330a358dbcc3c"
+            ]
+        ]
+    },
+    {
+        "id": "3da9a5616b33b5b2",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Alter/D1",
+        "topic": "Display/D1",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 1580,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "1e3663dad8af61d5",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Alter/D2",
+        "topic": "Display/D2",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 1600,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "bdf3fd1d5c635a62",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Alter/D3",
+        "topic": "Display/D3",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 1600,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "56a46aa3c15e0818",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Alter/D4",
+        "topic": "Display/D4",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 1600,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "a32330a358dbcc3c",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Alter/D5",
+        "topic": "Display/D5",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 1600,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "ef23c9e11fc1065e",
+        "type": "link in",
+        "z": "8dff866cf5fdd88d",
+        "name": "HA_Jahr_in",
+        "links": [
+            "9893352801cbbf24"
+        ],
+        "x": 45,
+        "y": 1020,
+        "wires": [
+            [
+                "2b4edcbd20d3410b"
+            ]
+        ]
+    },
+    {
+        "id": "2b4edcbd20d3410b",
+        "type": "simpletime",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "mydate": false,
+        "myymd": false,
+        "myyear": true,
+        "mymonth": false,
+        "mymonthn": false,
+        "mydom": false,
+        "mydoy": false,
+        "myday": false,
+        "myhourpm": false,
+        "myhour": false,
+        "mytime": false,
+        "mytimes": false,
+        "myminute": false,
+        "myminutes": false,
+        "mysecond": false,
+        "mymillis": false,
+        "myepoch": false,
+        "myrawdate": false,
+        "mypm": false,
+        "x": 350,
+        "y": 1020,
+        "wires": [
+            [
+                "5e47ae86ccac3541"
+            ]
+        ]
+    },
+    {
+        "id": "5e47ae86ccac3541",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "aktuelles Datum",
+        "func": "var jahr= msg.myyear;\nmsg.payload=jahr\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 1020,
+        "wires": [
+            [
+                "13662004b671d90b"
+            ]
+        ]
+    },
+    {
+        "id": "13662004b671d90b",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Jahr_akt",
+        "func": "msg.topic=\"T2\";\nmsg.payload = Number(msg.payload)\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 1020,
+        "wires": [
+            [
+                "6b52d8a72735611f"
+            ]
+        ]
+    },
+    {
+        "id": "6b52d8a72735611f",
+        "type": "link out",
+        "z": "8dff866cf5fdd88d",
+        "name": "Jahr_akt",
+        "mode": "link",
+        "links": [
+            "23a005fa3d9d1f16",
+            "34b5a06dd6271488",
+            "5903579ece43ae08",
+            "79ea896b8401a350",
+            "953030b504be3582",
+            "1cf15ccc7336fa8e",
+            "d5505d71d768e1d8",
+            "bc114b3c3aa0ff77",
+            "400ce07e15564b5e",
+            "b94e63b19899e06d"
+        ],
+        "x": 1555,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "5e912e5be2d08590",
+        "type": "ical-config",
+        "url": "https://calendar.google.com/calendar/ical/secret.group.calendar.google.com/private-secret/basic.ics",
+        "caldav": "",
+        "caltype": "ical",
+        "name": "Geburtstage",
+        "replacedates": false,
+        "usecache": false,
+        "username": "",
+        "password": "",
+        "experimental": false,
+        "calendar": "",
+        "pastWeeks": "0",
+        "futureWeeks": "4"
+    },
+    {
+        "id": "48fbfabe36f51f8d",
+        "type": "mqtt-broker",
+        "name": "HA",
+        "broker": "ServerIP",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "605edda1f6b2ffe2",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-ical-events": "2.2.5",
+            "node-red-contrib-simpletime": "3.1.0"
+        }
+    }
+]

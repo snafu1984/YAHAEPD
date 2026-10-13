@@ -1,0 +1,100 @@
+[
+    {
+        "id": "52c213202fe76b4a",
+        "type": "inject",
+        "z": "8dff866cf5fdd88d",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 1180,
+        "wires": [
+            [
+                "function_discovery"
+            ]
+        ]
+    },
+    {
+        "id": "function_discovery",
+        "type": "function",
+        "z": "8dff866cf5fdd88d",
+        "name": "Generate 20 Discovery Messages",
+        "func": "let rows = [1, 2, 3, 4, 5];\nlet cols = [\"A\", \"B\", \"C\", \"D\"];\n\nlet messages = [];\n\nfor (let r of rows) {\n    for (let c of cols) {\n\n        let id = `display_${c.toLowerCase()}${r}`;\n\n        messages.push({\n            topic: `homeassistant/sensor/${id}/config`,\n            payload: JSON.stringify({\n                name: `Display ${c}${r}`,\n                object_id: id,\n                unique_id: id,\n                state_topic: `Display/${c}${r}`,\n                icon: \"mdi:card-text\",\n                force_update: true,\n                device: {\n                    identifiers: [\"display_matrix\"],\n                    name: \"Display Matrix\",\n                    manufacturer: \"NodeRed\",\n                    model: \"5x4 MQTT Display\"\n                }\n            }),\n            retain: true,\n            qos: 1\n        });\n    }\n}\n\nreturn [messages];",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 1180,
+        "wires": [
+            [
+                "mqtt_out_discovery"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt_out_discovery",
+        "type": "mqtt out",
+        "z": "8dff866cf5fdd88d",
+        "name": "MQTT Discovery",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "48fbfabe36f51f8d",
+        "x": 810,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "48fbfabe36f51f8d",
+        "type": "mqtt-broker",
+        "name": "HA",
+        "broker": "ServerIP",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]
