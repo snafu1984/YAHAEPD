@@ -1,0 +1,507 @@
+
+[
+    {
+        "id": "4287d4283bd694a3",
+        "type": "tab",
+        "label": "Regenmesser",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "cd2b1771dcdd2018",
+        "type": "mqtt in",
+        "z": "4287d4283bd694a3",
+        "name": "",
+        "topic": "v3/your-ttn-application@ttn/devices/+/up",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "e89dc8e51f0d2997",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 190,
+        "y": 100,
+        "wires": [
+            [
+                "8084fe335f1012c2"
+            ]
+        ]
+    },
+    {
+        "id": "8084fe335f1012c2",
+        "type": "json",
+        "z": "4287d4283bd694a3",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 510,
+        "y": 100,
+        "wires": [
+            [
+                "3e33b92210a50447"
+            ]
+        ]
+    },
+    {
+        "id": "3e33b92210a50447",
+        "type": "function",
+        "z": "4287d4283bd694a3",
+        "name": "plantage_niederschlag",
+        "func": "\nconst p = msg.payload;\nconst u = p?.uplink_message;\nconst decoded = u?.decoded_payload;\n\nif (\n    !u ||\n    !decoded ||\n    !Number.isInteger(u.f_cnt) ||\n    !Number.isFinite(Number(decoded.rainlevel)) ||\n    !p.received_at\n) {\n    node.warn(\"Ungültiger Regen-Uplink ignoriert\");\n    return null;\n}\n\nconst device = p.end_device_ids?.device_id;\nif (!device) {\n    node.warn(\"Uplink ohne device_id ignoriert\");\n    return null;\n}\n\n// UTC-Empfangszeitpunkt übernehmen\nconst timestamp = Date.parse(p.received_at);\nif (!Number.isFinite(timestamp)) {\n    node.warn(\"Ungültiger received_at-Zeitstempel\");\n    return null;\n}\n\n// Regenmenge dieses Uplinks berechnen\nconst tip_count = Number(decoded.rainlevel);\nconst rain_mm = Math.round(tip_count * 0.5 * 10) / 10;\n\n// InfluxDB 1.x: Felder und Tags\nmsg.measurement = \"plantage_rain\";\nmsg.payload = [\n    {\n        tip_count: tip_count,\n        rain_mm: rain_mm,\n        frame_counter: u.f_cnt\n    },\n    {\n        device_id: device\n    }\n];\n\nmsg.timestamp = timestamp;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 100,
+        "wires": [
+            [
+                "b3d30508fa36c48b"
+            ]
+        ]
+    },
+    {
+        "id": "b3d30508fa36c48b",
+        "type": "influxdb out",
+        "z": "4287d4283bd694a3",
+        "influxdb": "2a2a47cb3b76f581",
+        "name": "plantage_niederschlag_DB",
+        "measurement": "plantage_rain",
+        "precision": "ms",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "organisation",
+        "bucket": "bucket",
+        "x": 960,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "df47ec76100ccfad",
+        "type": "function",
+        "z": "4287d4283bd694a3",
+        "name": "rain_today_fx",
+        "func": "\nconst now = new Date();\n\n// Lokales Datum und Stunde in Europe/Berlin ermitteln\nconst parts = new Intl.DateTimeFormat(\"en-GB\", {\n    timeZone: \"Europe/Berlin\",\n    year: \"numeric\",\n    month: \"2-digit\",\n    day: \"2-digit\",\n    hour: \"2-digit\",\n    hourCycle: \"h23\"\n}).formatToParts(now);\n\nconst get = name => parts.find(p => p.type === name).value;\n\nlet year = Number(get(\"year\"));\nlet month = Number(get(\"month\"));\nlet day = Number(get(\"day\"));\nconst hour = Number(get(\"hour\"));\n\n// Vor 08:00 Uhr gehört der Zeitraum zum Vortag\nif (hour < 8) {\n    const d = new Date(Date.UTC(year, month - 1, day - 1));\n    year = d.getUTCFullYear();\n    month = d.getUTCMonth() + 1;\n    day = d.getUTCDate();\n}\n\n// Lokalen Tagesbeginn 08:00 Uhr als ISO-Zeitpunkt umrechnen.\n// Die UTC-Verschiebung wird anhand Europe/Berlin bestimmt.\nfunction berlinToUtc(y, m, d, h) {\n    const target = Date.UTC(y, m - 1, d, h);\n    const approx = new Date(target);\n\n    const formatted = new Intl.DateTimeFormat(\"en-GB\", {\n        timeZone: \"Europe/Berlin\",\n        year: \"numeric\",\n        month: \"2-digit\",\n        day: \"2-digit\",\n        hour: \"2-digit\",\n        minute: \"2-digit\",\n        second: \"2-digit\",\n        hourCycle: \"h23\"\n    }).formatToParts(approx);\n\n    const values = {};\n    for (const p of formatted) {\n        if (p.type !== \"literal\") values[p.type] = Number(p.value);\n    }\n\n    const shownAsUtc = Date.UTC(\n        values.year,\n        values.month - 1,\n        values.day,\n        values.hour,\n        values.minute,\n        values.second\n    );\n\n    return new Date(target - (shownAsUtc - target)).toISOString();\n}\n\nconst start = berlinToUtc(year, month, day, 8);\n\n// Folgetag bestimmen\nconst next = new Date(Date.UTC(year, month - 1, day + 1));\nconst end = berlinToUtc(\n    next.getUTCFullYear(),\n    next.getUTCMonth() + 1,\n    next.getUTCDate(),\n    8\n);\n\nmsg.query = `SELECT SUM(\"rain_mm\") AS \"rain_today\"\nFROM \"plantage_rain\"\nWHERE time >= '${start}' AND time < '${end}'`;\n\nmsg.topic = \"precipitation/today\";\nmsg.rain_period_start = start;\nmsg.rain_period_end = end;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 160,
+        "wires": [
+            [
+                "f7d2e3c15c7d7eda"
+            ]
+        ]
+    },
+    {
+        "id": "f7d2e3c15c7d7eda",
+        "type": "influxdb in",
+        "z": "4287d4283bd694a3",
+        "influxdb": "2a2a47cb3b76f581",
+        "name": "rain_daily",
+        "query": "",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "organisation",
+        "x": 700,
+        "y": 160,
+        "wires": [
+            [
+                "fc24797cd06f21de"
+            ]
+        ]
+    },
+    {
+        "id": "fc24797cd06f21de",
+        "type": "function",
+        "z": "4287d4283bd694a3",
+        "name": "rain_today_mqtt_fx",
+        "func": "const rows = msg.payload;\n\nlet value = 0;\n\nif (Array.isArray(rows) && rows.length > 0) {\n    const result = Number(rows[0].rain_today);\n\n    if (!Number.isFinite(result)) {\n        node.warn(\"Ungültiger Tagesniederschlag\");\n        return null;\n    }\n\n    value = result;\n} else {\n    node.warn(\"Keine Messwerte für den Zeitraum – veröffentliche 0 mm\");\n}\n\nmsg.topic = \"precipitation/today\";\nmsg.payload = value;\nmsg.retain = true;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 160,
+        "wires": [
+            [
+                "e8bbf94f060937a9"
+            ]
+        ]
+    },
+    {
+        "id": "e8bbf94f060937a9",
+        "type": "mqtt out",
+        "z": "4287d4283bd694a3",
+        "name": "precipitation/today",
+        "topic": "precipitation/today",
+        "qos": "",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "4f9fd004.61dcd8",
+        "x": 1240,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "41b96b2246be631e",
+        "type": "function",
+        "z": "4287d4283bd694a3",
+        "name": "Discovery_rain_today",
+        "func": "msg.topic = \"homeassistant/sensor/precipitation/today/config\";\n\nmsg.payload = {\n    name: \"Plantage Niederschlag Heute MQTT\",\n    unique_id: \"precipitation_today_mqtt\",\n    state_topic: \"precipitation/today\",\n    unit_of_measurement: \"mm\",\n    device_class: \"precipitation\",\n    state_class: \"measurement\",\n    value_template: \"{{ value | float(1) }}\",\n    icon: \"mdi:weather-rainy\",\n    device: {\n        identifiers: [\"plantage_niederschlagsmesser\"],\n        name: \"Plantage Niederschlagsmesser\",\n        manufacturer: \"Aqua-Scope\",\n        model: \"RANLWE01\"\n    }\n};\n\nmsg.retain = true;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 340,
+        "wires": [
+            [
+                "111bc6ca8c5ebb17"
+            ]
+        ]
+    },
+    {
+        "id": "111bc6ca8c5ebb17",
+        "type": "mqtt out",
+        "z": "4287d4283bd694a3",
+        "name": "",
+        "topic": "",
+        "qos": "",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "4f9fd004.61dcd8",
+        "x": 650,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "b777062e905412bb",
+        "type": "inject",
+        "z": "4287d4283bd694a3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 340,
+        "wires": [
+            [
+                "41b96b2246be631e"
+            ]
+        ]
+    },
+    {
+        "id": "1b721f267cba9f56",
+        "type": "inject",
+        "z": "4287d4283bd694a3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "840",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 200,
+        "wires": [
+            [
+                "df47ec76100ccfad",
+                "3c27619b5ee4a0dd"
+            ]
+        ]
+    },
+    {
+        "id": "3c27619b5ee4a0dd",
+        "type": "function",
+        "z": "4287d4283bd694a3",
+        "name": "rain_yesterday_fx",
+        "func": "const now = new Date();\n\nconst parts = new Intl.DateTimeFormat(\"en-GB\", {\n    timeZone: \"Europe/Berlin\",\n    year: \"numeric\",\n    month: \"2-digit\",\n    day: \"2-digit\",\n    hour: \"2-digit\",\n    hourCycle: \"h23\"\n}).formatToParts(now);\n\nconst get = name => parts.find(p => p.type === name).value;\n\nlet year = Number(get(\"year\"));\nlet month = Number(get(\"month\"));\nlet day = Number(get(\"day\"));\nconst hour = Number(get(\"hour\"));\n\n// Aktuellen Niederschlagstag bestimmen\nif (hour < 8) {\n    const d = new Date(Date.UTC(year, month - 1, day - 1));\n    year = d.getUTCFullYear();\n    month = d.getUTCMonth() + 1;\n    day = d.getUTCDate();\n}\n\n// Einen lokalen Kalendertag zurückgehen: Vortag\nconst previous = new Date(Date.UTC(year, month - 1, day - 1));\nyear = previous.getUTCFullYear();\nmonth = previous.getUTCMonth() + 1;\nday = previous.getUTCDate();\n\nfunction berlinToUtc(y, m, d, h) {\n    const target = Date.UTC(y, m - 1, d, h);\n    const formatted = new Intl.DateTimeFormat(\"en-GB\", {\n        timeZone: \"Europe/Berlin\",\n        year: \"numeric\",\n        month: \"2-digit\",\n        day: \"2-digit\",\n        hour: \"2-digit\",\n        minute: \"2-digit\",\n        second: \"2-digit\",\n        hourCycle: \"h23\"\n    }).formatToParts(new Date(target));\n\n    const values = {};\n    for (const p of formatted) {\n        if (p.type !== \"literal\") values[p.type] = Number(p.value);\n    }\n\n    const shownAsUtc = Date.UTC(\n        values.year,\n        values.month - 1,\n        values.day,\n        values.hour,\n        values.minute,\n        values.second\n    );\n\n    return new Date(target - (shownAsUtc - target)).toISOString();\n}\n\nconst start = berlinToUtc(year, month, day, 8);\n\nconst next = new Date(Date.UTC(year, month - 1, day + 1));\nconst end = berlinToUtc(\n    next.getUTCFullYear(),\n    next.getUTCMonth() + 1,\n    next.getUTCDate(),\n    8\n);\n\nmsg.query = `SELECT SUM(\"rain_mm\") AS \"rain_yesterday\"\nFROM \"plantage_rain\"\nWHERE time >= '${start}' AND time < '${end}'`;\n\nmsg.topic = \"precipitation/yesterday\";\nmsg.rain_period_start = start;\nmsg.rain_period_end = end;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 240,
+        "wires": [
+            [
+                "21c7f64a9f7cfb58"
+            ]
+        ]
+    },
+    {
+        "id": "21c7f64a9f7cfb58",
+        "type": "influxdb in",
+        "z": "4287d4283bd694a3",
+        "influxdb": "2a2a47cb3b76f581",
+        "name": "rain_daily",
+        "query": "",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "organisation",
+        "x": 700,
+        "y": 240,
+        "wires": [
+            [
+                "abe8af56b86d8ee2"
+            ]
+        ]
+    },
+    {
+        "id": "abe8af56b86d8ee2",
+        "type": "function",
+        "z": "4287d4283bd694a3",
+        "name": "rain_yesterday_mqtt_fx",
+        "func": "const rows = msg.payload;\n\nlet value = 0;\n\nif (Array.isArray(rows) && rows.length > 0) {\n    const result = Number(rows[0].rain_yesterday);\n\n    if (!Number.isFinite(result)) {\n        node.warn(\"Ungültiger Niederschlag des Vortags\");\n        return null;\n    }\n\n    value = result;\n} else {\n    node.warn(\"Keine Messwerte für den Vortag – veröffentliche 0 mm\");\n}\n\nmsg.topic = \"precipitation/yesterday\";\nmsg.payload = value;\nmsg.retain = true;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 240,
+        "wires": [
+            [
+                "49595d2ad6713328"
+            ]
+        ]
+    },
+    {
+        "id": "49595d2ad6713328",
+        "type": "mqtt out",
+        "z": "4287d4283bd694a3",
+        "name": "precipitation/yesterday",
+        "topic": "precipitation/yesterday",
+        "qos": "",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "4f9fd004.61dcd8",
+        "x": 1250,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "fa8cb7fdb8d2fcd1",
+        "type": "inject",
+        "z": "4287d4283bd694a3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 400,
+        "wires": [
+            [
+                "bd9e9560f6c5fa39"
+            ]
+        ]
+    },
+    {
+        "id": "bd9e9560f6c5fa39",
+        "type": "function",
+        "z": "4287d4283bd694a3",
+        "name": "Discovery_rain_yesterday",
+        "func": "msg.topic = \"homeassistant/sensor/precipitation_yesterday/config\";\n\nmsg.payload = {\n    name: \"precipitation/yesterday\",\n    unique_id: \"precipitation_yesterday_mqtt\",\n    state_topic: \"precipitation/yesterday\",\n    unit_of_measurement: \"mm\",\n    device_class: \"precipitation\",\n    state_class: \"measurement\",\n    value_template: \"{{ value | float(0) }}\",\n    icon: \"mdi:weather-rainy\",\n    device: {\n        identifiers: [\"plantage_niederschlagsmesser\"],\n        name: \"Plantage Niederschlagsmesser\",\n        manufacturer: \"Aqua-Scope\",\n        model: \"RANLWE01\"\n    }\n};\n\nmsg.retain = true;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 400,
+        "wires": [
+            [
+                "5cdd619122963f6c"
+            ]
+        ]
+    },
+    {
+        "id": "5cdd619122963f6c",
+        "type": "mqtt out",
+        "z": "4287d4283bd694a3",
+        "name": "",
+        "topic": "",
+        "qos": "",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "4f9fd004.61dcd8",
+        "x": 650,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "e89dc8e51f0d2997",
+        "type": "mqtt-broker",
+        "name": "ttn-regen",
+        "broker": "eu1.cloud.thethings.network",
+        "port": "8883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "2a2a47cb3b76f581",
+        "type": "influxdb",
+        "hostname": "influxdb",
+        "port": "8086",
+        "protocol": "http",
+        "database": "DBname",
+        "name": "Tname",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "1.x",
+        "url": "http://localhost:8086",
+        "timeout": "",
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "4f9fd004.61dcd8",
+        "type": "mqtt-broker",
+        "name": "broker_name",
+        "broker": "broker_adress",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "compatmode": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "fb1aa6c864c47058",
+        "type": "tls-config",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "",
+        "verifyservercert": true,
+        "alpnprotocol": ""
+    },
+    {
+        "id": "e5a284460e150f2d",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-influxdb": "0.7.0"
+        }
+    }
+]

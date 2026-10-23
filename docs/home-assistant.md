@@ -14,10 +14,11 @@ The following components are required for the complete setup:
 - The built-in Sun integration
 - The built-in Moon integration
 - The Lunar Phase integration for moonrise and moonset times
-- An MQTT broker for the birthday calendar
-- Node-RED for the birthday calendar and MQTT Discovery setup
+- An MQTT broker for the birthday calendar and Plantage rainfall sensors
+- Node-RED for the birthday calendar, Plantage rainfall calculations, and MQTT Discovery
+- InfluxDB 1.x for Plantage rainfall storage and calculations
 
-The weather, Sun, Moon, and rainfall sensors can be configured independently of the birthday calendar.
+The weather, Sun, Moon, and Zeyn rainfall sensors can be configured independently of the birthday calendar and Plantage rainfall flow.
 
 ## Required Integrations
 
@@ -54,7 +55,7 @@ No additional custom integration is required for the moon phase itself.
 
 The Lunar Phase custom integration provides the moonrise and moonset times.
 
-Repository: https://github.com/ngocjohn/lunar-phase
+Repository: [Lunar Phase](https://github.com/ngocjohn/lunar-phase)
 
 The configuration expects the following source entities:
 
@@ -150,7 +151,7 @@ Missing entries use fallback values.
 
 ## Rainfall Sensors
 
-The configuration supports two rainfall sources: Zeyn and the Plantage rain gauge.
+The configuration supports two rainfall sources: Zeyn and the Plantage rain gauge. They use separate processing methods.
 
 ### Zeyn Rainfall
 
@@ -173,32 +174,42 @@ These utility meters use `delta_values: true` to accumulate the reported interva
 
 ### Plantage Rainfall
 
-The Plantage rain gauge uses the RANLWE01 sensor.
+The Plantage rain gauge uses the RANLWE01 sensor. Its uplinks are received through The Things Stack (TTN) and processed by Node-RED.
 
-The raw rain-level value represents the number of tipping events since the last uplink. Each tipping event corresponds to `0.5 mm` of rainfall.
+The raw `rainlevel` value represents the number of tipping events since the last uplink. Each tipping event corresponds to `0.5 mm` of rainfall.
 
-The template sensor `sensor.plantage_niederschlag_intervall` calculates the rainfall amount for the reporting interval by multiplying the raw value by `0.5`.
+Node-RED calculates the rainfall amount for each uplink and stores the measurement in InfluxDB 1.x. The measurement is stored as `plantage_rain`, with the following fields:
 
-The sensor is updated when a `state_changed` event occurs for:
+- `tip_count` — Number of tipping events reported by the device
+- `rain_mm` — Calculated rainfall amount in millimeters
+- `frame_counter` — TTN uplink frame counter
 
-`sensor.plantage_niederschlag_rainlevel`
+The device ID is stored as a tag, and the TTN `received_at` timestamp is used as the measurement timestamp.
 
-The new state from the event is used for the calculation. Invalid values result in `0`.
+### Daily Rainfall Totals
 
-### Daily Rainfall Total
+Node-RED calculates the daily rainfall totals by querying InfluxDB. The rainfall day runs from **8:00 AM to 8:00 AM the following day**, using the `Europe/Berlin` time zone, including daylight saving time changes.
 
-The utility meter `sensor.plantage_niederschlag_heute` accumulates the interval values from `sensor.plantage_niederschlag_intervall`.
+The flow calculates two totals:
 
-The rainfall day runs from **8:00 AM to 8:00 AM the following day**, using:
+- **Today:** The current rainfall period, from the most recent 8:00 AM boundary to the next 8:00 AM boundary.
+- **Yesterday:** The previous completed rainfall period, from 8:00 AM to 8:00 AM.
 
-```yaml
-cycle: daily
-offset: "08:00:00"
-delta_values: true
-always_available: true
-```
+The totals are recalculated every 14 minutes and published as retained MQTT messages:
 
-The template sensor `sensor.plantage_niederschlag_letzter_tag` reads the `last_period` attribute of `sensor.plantage_niederschlag_heute` to provide the rainfall total for the previous completed period.
+| MQTT topic | Description |
+|---|---|
+| `precipitation/today` | Total rainfall for the current rainfall period |
+| `precipitation/yesterday` | Total rainfall for the previous completed rainfall period |
+
+Separate MQTT Discovery messages register the corresponding sensors in Home Assistant. The flow defines the following discovery configuration topics:
+
+- `homeassistant/sensor/precipitation/today/config`
+- `homeassistant/sensor/precipitation_yesterday/config`
+
+The actual sensor entity IDs are assigned by Home Assistant and may differ depending on existing entities and naming conflicts.
+
+The calculation is performed by Node-RED and InfluxDB, not by a Home Assistant template sensor or utility meter. See [Node-RED Configuration](node-red.md#plantage-rainfall-calculation) for the flow details and installation instructions.
 
 ### Plantage Temperature and Battery Voltage
 
@@ -230,8 +241,6 @@ The birthday flow publishes up to five calendar entries using four topic groups:
 
 The birthday flow calculates the age from the birth year entered in the calendar event's comment. The calculated value represents the age the person will turn on their birthday in the current year. If the comment is empty and contains no birth year, the corresponding age field remains empty.
 
-This behavior has been confirmed in regular use.
-
 The MQTT messages are retained so that the latest values remain available to subscribers.
 
 ### MQTT Discovery
@@ -242,7 +251,7 @@ For example, the discovery configuration for `Display/A1` uses the topic:
 
 `homeassistant/sensor/display_a1/config`
 
-and the state topic:
+The corresponding state topic is:
 
 `Display/A1`
 
@@ -261,7 +270,7 @@ The discovery flow groups these entities under the device **Display Matrix**.
 
 The MQTT sensor definitions are not configured directly in `configuration.yaml`; they are created through MQTT Discovery by Node-RED.
 
-The display uses the first four rows (A1–D4). The fifth row remains available in Home Assistant but is not displayed by the current ESPHome layout.
+The display uses the first four rows (`A1`–`D4`). The fifth row remains available in Home Assistant but is not displayed by the current ESPHome layout.
 
 ## ESPHome Integration
 
@@ -273,37 +282,39 @@ The current display implementation refreshes the e-paper display as a whole. It 
 
 ## Troubleshooting
 
-### Weather data is missing
+### Weather Data Is Missing
 
 - Verify that `weather.forecast_home` exists.
 - Check that the weather integration is returning forecast data.
 - Check the state and attributes of `sensor.weather_forecast_hourly` and `sensor.weather_forecast_daily`.
 - Verify that the display forecast sensors contain the expected pipe-separated values.
 
-### Sunrise or sunset is unavailable
+### Sunrise or Sunset Is Unavailable
 
 - Verify that the built-in Sun integration is available.
 - Check the `next_rising` and `next_setting` attributes of `sun.sun`.
 
-### Moon phase is missing
+### Moon Phase Is Missing
 
 - Verify that the built-in Moon integration provides `sensor.moon_phase`.
 - Check that the entity is available in Home Assistant.
 
-### Moonrise or moonset is missing
+### Moonrise or Moonset Is Missing
 
 - Verify that the Lunar Phase integration is installed and working.
 - Check the source entities `sensor.winsen_luhe_moon_rise` and `sensor.winsen_luhe_moon_set`.
 - Confirm that the source entity IDs match the template configuration.
 
-### Rainfall values are incorrect
+### Rainfall Values Are Incorrect
 
 - Check the raw source entities for the Zeyn and Plantage rain gauges.
-- Confirm that the raw rainfall values represent tipping events and that each event corresponds to `0.5 mm`.
-- For Plantage, verify that the source entity changes state when a new report arrives.
-- Remember that the Plantage daily total resets at 8:00 AM rather than midnight.
+- Confirm that each tipping event corresponds to `0.5 mm`.
+- For Plantage, verify that TTN uplinks are reaching Node-RED and that the measurements are being stored in InfluxDB.
+- Check the Node-RED logs for invalid uplinks or InfluxDB query errors.
+- Verify that the MQTT topics `precipitation/today` and `precipitation/yesterday` receive retained numeric values.
+- Remember that the Plantage rainfall day resets at 8:00 AM, not at midnight.
 
-### Birthday sensors are missing
+### Birthday Sensors Are Missing
 
 - Verify that Node-RED is running and that both birthday and discovery flows are deployed.
 - Check the MQTT broker connection.

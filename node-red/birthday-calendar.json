@@ -1507,7 +1507,7 @@
     {
         "id": "5e912e5be2d08590",
         "type": "ical-config",
-        "url": "https://calendar.google.com/calendar/ical/secret.group.calendar.google.com/private-secret/basic.ics",
+        "url": "https://calendar.google.com/calendar/ical/YOUR_CALENDAR_ID/private-YOUR_ACCESS_KEY/basic.ics",
         "caldav": "",
         "caltype": "ical",
         "name": "Geburtstage",

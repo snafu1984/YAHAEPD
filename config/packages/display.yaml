@@ -411,7 +411,7 @@ display:
 
               // Precipitation: Amount | Probability / precipitation
       it.printf(
-        cx - 38, 113, id(sym_weather_small), text_color,
+        cx - 43, 113, id(sym_weather_small), text_color,
         TextAlign::TOP_CENTER, "\U000F058C"
       );
 
@@ -471,10 +471,10 @@ display:
 
         // Precipitation: Amount | Probability / precipitation
         it.printf(
-          cx - 38, 276, id(sym_weather_small), text_color,
+          cx - 43, 276, id(sym_weather_small), text_color,
           TextAlign::TOP_CENTER, "\U000F058C"
         );
-        // war cx - 48
+        // was cx - 48
         it.printf(
           cx + 12, 276, id(font_18), text_color,
           TextAlign::TOP_CENTER, "%.0f%% / %.1f",

@@ -183,10 +183,10 @@ sensor:
 
   - platform: homeassistant
     id: rain_today
-    entity_id: sensor.plantage_niederschlag_heute
+    entity_id: sensor.precipitation_today_mqtt
 
   - platform: homeassistant
     id: rain_yesterday
-    entity_id: sensor.plantage_niederschlag_letzter_tag
+    entity_id: sensor.precipitation_yesterday_mqtt
 
 
