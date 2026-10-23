@@ -18,7 +18,7 @@ The following components are required for the complete setup:
 - Node-RED for the birthday calendar, Plantage rainfall calculations, and MQTT Discovery
 - InfluxDB 1.x for Plantage rainfall storage and calculations
 
-The weather, Sun, Moon, and Zeyn rainfall sensors can be configured independently of the birthday calendar and Plantage rainfall flow.
+The weather, Sun and Moon sensors can be configured independently of the birthday calendar and precipitation sensor.
 
 ## Required Integrations
 
@@ -149,30 +149,7 @@ Format:
 
 Missing entries use fallback values.
 
-## Rainfall Sensors
-
-The configuration supports two rainfall sources: Zeyn and the Plantage rain gauge. They use separate processing methods.
-
-### Zeyn Rainfall
-
-The template sensor `sensor.zeyn_rain_interval` calculates the rainfall amount since the last uplink.
-
-The source entity is:
-
-`sensor.zeyn_regen_rainlevel`
-
-The raw value is multiplied by `0.5` to convert it to millimeters. Invalid source values result in `0`.
-
-The resulting sensor is used by four utility meters:
-
-- `sensor.zeyn_rain_today`
-- `sensor.zeyn_rain_this_week`
-- `sensor.zeyn_rain_this_month`
-- `sensor.zeyn_rain_this_year`
-
-These utility meters use `delta_values: true` to accumulate the reported interval amounts over their respective periods.
-
-### Plantage Rainfall
+## Precipitation Sensors
 
 The Plantage rain gauge uses the RANLWE01 sensor. Its uplinks are received through The Things Stack (TTN) and processed by Node-RED.
 
