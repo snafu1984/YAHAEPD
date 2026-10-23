@@ -211,17 +211,6 @@ The actual sensor entity IDs are assigned by Home Assistant and may differ depen
 
 The calculation is performed by Node-RED and InfluxDB, not by a Home Assistant template sensor or utility meter. See [Node-RED Configuration](node-red.md#plantage-rainfall-calculation) for the flow details and installation instructions.
 
-### Plantage Temperature and Battery Voltage
-
-Two additional template sensors convert the raw values from the Plantage device:
-
-| Template sensor | Source entity | Conversion | Unit |
-|---|---|---|---|
-| `sensor.plantage_niederschlag_temperatur` | `sensor.plantage_niederschlag_temperature` | Raw value ÷ 10 | °C |
-| `sensor.plantage_niederschlag_batteriespannung` | `sensor.plantage_niederschlag_bat_voltage` | Raw value ÷ 10 | V |
-
-The temperature and battery voltage templates return no value when their source values are not numeric.
-
 ## Birthday Calendar via MQTT
 
 The birthday calendar is provided by Node-RED. It retrieves calendar entries and publishes the results to MQTT topics. A separate Node-RED flow registers the corresponding MQTT sensors in Home Assistant through MQTT Discovery.
