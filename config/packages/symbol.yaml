@@ -86,19 +86,19 @@ font:
       - "\U000F0593" # lightning
       - "\U000F067E" # lightning-rainy
 
-  # ------------------------------------------------------------
-  # Moon phase icons
+    # ------------------------------------------------------------
+  # Moon phase icons - Noto Emoji
   # ------------------------------------------------------------
 
-  - file: ${sym_file}
+  - file: "../../fonts/NotoEmoji-Regular.ttf"
     id: sym_moon
-    size: 100
+    size: 90
     glyphs:
-      - "\U000F0F64" # moon-new
-      - "\U000F0F67" # moon-waxing-crescent
-      - "\U000F0F61" # moon-first-quarter
-      - "\U000F0F68" # moon-waxing-gibbous
-      - "\U000F0F62" # moon-full
-      - "\U000F0F66" # moon-waning-gibbous
-      - "\U000F0F63" # moon-last-quarter
-      - "\U000F0F65" # moon-waning-crescent
+      - "\U0001F311" # New Moon
+      - "\U0001F312" # Waxing Crescent
+      - "\U0001F313" # First Quarter
+      - "\U0001F314" # Waxing Gibbous
+      - "\U0001F315" # Full Moon
+      - "\U0001F316" # Waning Gibbous
+      - "\U0001F317" # Last Quarter
+      - "\U0001F318" # Waning Crescent

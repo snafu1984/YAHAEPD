@@ -280,27 +280,30 @@ display:
       const char *moon_icon = "\U000F0F64";
       const char *moon_name = "Neumond";
 
-      // Determine the moon phase based on the Home Assistant state
-      if (moon == "waxing_crescent") {
-        moon_icon = "\U000F0F67";
+            // Determine the moon phase based on the Home Assistant state
+      if (moon == "new_moon") {
+        moon_icon = "\U0001F311";
+        moon_name = "Neumond";
+      } else if (moon == "waxing_crescent") {
+        moon_icon = "\U0001F312";
         moon_name = "Zunehmende Sichel";
       } else if (moon == "first_quarter") {
-        moon_icon = "\U000F0F61";
+        moon_icon = "\U0001F313";
         moon_name = "Erstes Viertel";
       } else if (moon == "waxing_gibbous") {
-        moon_icon = "\U000F0F68";
+        moon_icon = "\U0001F314";
         moon_name = "Zunehmender Mond";
       } else if (moon == "full_moon") {
-        moon_icon = "\U000F0F62";
+        moon_icon = "\U0001F315";
         moon_name = "Vollmond";
       } else if (moon == "waning_gibbous") {
-        moon_icon = "\U000F0F66";
+        moon_icon = "\U0001F316";
         moon_name = "Abnehmender Mond";
       } else if (moon == "last_quarter") {
-        moon_icon = "\U000F0F63";
+        moon_icon = "\U0001F317";
         moon_name = "Letztes Viertel";
       } else if (moon == "waning_crescent") {
-        moon_icon = "\U000F0F65";
+        moon_icon = "\U0001F318";
         moon_name = "Abnehmende Sichel";
       }
 

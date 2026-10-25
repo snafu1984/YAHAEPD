@@ -12,6 +12,33 @@ The YAHAEPD display shows current weather conditions, weather forecasts, moon ph
 
 ![YAHAEPD display overview](docs/images/display-overview.jpeg)
 
+### Moon Phase Icons
+
+The moon phase icons use the **Noto Emoji** font instead of Material Design Icons.
+
+- **Font file:** `fonts/NotoEmoji-Regular.ttf`
+- **ESPHome font ID:** `sym_moon`
+- **Font configuration:** `config/packages/symbol.yaml`
+- **Font size:** `90`
+- **Unicode range:** `U+1F311`–`U+1F318`
+
+The font configuration defines the eight moon phase symbols used by the display:
+
+| Unicode | Moon Phase |
+|---|---|
+| `U+1F311` | New Moon |
+| `U+1F312` | Waxing Crescent |
+| `U+1F313` | First Quarter |
+| `U+1F314` | Waxing Gibbous |
+| `U+1F315` | Full Moon |
+| `U+1F316` | Waning Gibbous |
+| `U+1F317` | Last Quarter |
+| `U+1F318` | Waning Crescent |
+
+The font file must be present in the `fonts/` directory. The glyphs defined in `config/packages/symbol.yaml` must match the Unicode code points used in `config/packages/display.yaml`.
+
+If you change the font or its glyphs, update both configuration files accordingly.
+
 ## Features
 
 - **Date and time** — Displays the current date and time.

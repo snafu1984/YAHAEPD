@@ -2,7 +2,9 @@
 
 This document describes the Home Assistant integrations, template sensors, and configuration required by YAHAEPD (Yet Another Home Assistant E-Paper Display).
 
-The configuration provides current weather data, hourly and daily forecasts, sunrise and sunset times, moon phase and moonrise/moonset times, rainfall measurements, and birthday calendar data.
+The configuration provides current weather data, hourly and daily forecasts, sunrise and sunset times, moon phase and moonrise/moonset times, precipitation totals published by Node-RED via MQTT, and birthday calendar data.
+
+The Plantage rain gauge data is processed outside Home Assistant by Node-RED and InfluxDB. The raw TTN rain gauge sensor does not need to be configured as a Home Assistant entity.
 
 ## Requirements
 
@@ -18,7 +20,7 @@ The following components are required for the complete setup:
 - Node-RED for the birthday calendar, Plantage rainfall calculations, and MQTT Discovery
 - InfluxDB 1.x for Plantage rainfall storage and calculations
 
-The weather, Sun and Moon sensors can be configured independently of the birthday calendar and precipitation sensor.
+The weather, Sun, and Moon integrations can be configured independently of the birthday calendar and the external precipitation calculation pipelin
 
 ## Required Integrations
 
@@ -151,7 +153,11 @@ Missing entries use fallback values.
 
 ## Precipitation Sensors
 
-The Plantage rain gauge uses the RANLWE01 sensor. Its uplinks are received through The Things Stack (TTN) and processed by Node-RED.
+Data Flow
+
+The Plantage RANLWE01 rain gauge sends its measurements through The Things Stack (TTN). Node-RED processes the incoming data and stores the rainfall measurements in InfluxDB 1.x. Node-RED then publishes the calculated daily totals via MQTT.
+
+Home Assistant receives these totals through MQTT Discovery. The raw TTN rain gauge sensor is not used as a Home Assistant entity.
 
 The raw `rainlevel` value represents the number of tipping events since the last uplink. Each tipping event corresponds to `0.5 mm` of rainfall.
 
@@ -273,12 +279,13 @@ The current display implementation refreshes the e-paper display as a whole. It 
 
 ### Rainfall Values Are Incorrect
 
-- Check the raw source entities for the Zeyn and Plantage rain gauges.
-- Confirm that each tipping event corresponds to `0.5 mm`.
-- For Plantage, verify that TTN uplinks are reaching Node-RED and that the measurements are being stored in InfluxDB.
+- Verify that TTN uplinks from the Plantage RANLWE01 reach Node-RED.
 - Check the Node-RED logs for invalid uplinks or InfluxDB query errors.
+- Verify that rainfall measurements are stored in InfluxDB with the expected fields.
 - Verify that the MQTT topics `precipitation/today` and `precipitation/yesterday` receive retained numeric values.
+- Check that MQTT Discovery has registered the corresponding sensors in Home Assistant.
 - Remember that the Plantage rainfall day resets at 8:00 AM, not at midnight.
+
 
 ### Birthday Sensors Are Missing
 
